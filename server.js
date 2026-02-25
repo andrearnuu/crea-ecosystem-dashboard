@@ -28,6 +28,7 @@ app.use(express.static(path.join(__dirname, 'public')));
 const DEFAULT_DATA = {
   clients: [], team: [], projects: [], automations: [], finance: [],
   activity: [], calendar: [], woo_orders: [],
+  contracts: [], subscriptions: [], lab_orders: [],
   settings: { companyName: "CREA", brand1: "CREA STUDIO", brand2: "CREA LAB", email: "hello@crea-studio.it" }
 };
 

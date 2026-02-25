@@ -1,81 +1,1202 @@
 {
   "clients": [
-    {"id":1,"name":"Telenord","brand":"STUDIO","status":"active","value":24000,"email":"","phone":"","notes":"TV ligure, quasi 50 anni di storia. 5 post/giorno multi-piattaforma. Cliente più impegnativo.","created":"2025-01-01"},
-    {"id":2,"name":"Brisas Peruanas","brand":"STUDIO","status":"active","value":6000,"email":"","phone":"","notes":"Ristorante cucina peruviana. Gestione social standard.","created":"2025-03-01"},
-    {"id":3,"name":"Pro Recco Pallavolo","brand":"STUDIO","status":"active","value":6000,"email":"","phone":"","notes":"Club sportivo. Gestione social standard.","created":"2025-04-01"},
-    {"id":4,"name":"Tabarca","brand":"STUDIO","status":"active","value":6000,"email":"","phone":"","notes":"Gestione social standard.","created":"2025-05-01"},
-    {"id":5,"name":"Zenith Events","brand":"STUDIO","status":"active","value":6000,"email":"","phone":"","notes":"Eventi. Gestione social standard.","created":"2025-06-01"},
-    {"id":6,"name":"TopSub","brand":"STUDIO","status":"completed","value":10000,"email":"","phone":"","notes":"Produttore italiano di mute subacquee. Sito web completato.","created":"2024-10-01"},
-    {"id":7,"name":"Navaltest Srl","brand":"STUDIO","status":"completed","value":12000,"email":"","phone":"","notes":"Azienda NDT controlli non distruttivi marittimi. Sito web + 3D completato.","created":"2024-11-01"},
-    {"id":8,"name":"Excelsior Palace Hotel","brand":"STUDIO","status":"active","value":15000,"email":"","phone":"","notes":"Sito web + AI Chatbot concierge 'Marco' con AI. Progetto flagship.","created":"2025-02-01"},
-    {"id":9,"name":"Serravalle Designer Outlet","brand":"STUDIO","status":"pending","value":18000,"email":"","phone":"","notes":"Proposta social media management in preparazione. Leveraging metriche Telenord.","created":"2026-02-01"},
-    {"id":10,"name":"Clienti CREA LAB (Associazioni Sportive)","brand":"LAB","status":"active","value":8000,"email":"","phone":"","notes":"Target primario 70%: divise sportive, abbigliamento personalizzato per associazioni.","created":"2024-09-01"},
-    {"id":11,"name":"Clienti CREA LAB (PMI)","brand":"LAB","status":"active","value":12000,"email":"","phone":"","notes":"Aziende PMI: merchandising aziendale, gadget promozionali, shopper personalizzate.","created":"2024-09-01"}
+    {
+      "id": 1,
+      "name": "Telenord",
+      "brand": "STUDIO",
+      "status": "active",
+      "value": 24000,
+      "email": "",
+      "phone": "",
+      "notes": "TV ligure, quasi 50 anni di storia. 5 post/giorno multi-piattaforma. Cliente più impegnativo.",
+      "created": "2025-01-01"
+    },
+    {
+      "id": 2,
+      "name": "Brisas Peruanas",
+      "brand": "STUDIO",
+      "status": "active",
+      "value": 6000,
+      "email": "",
+      "phone": "",
+      "notes": "Ristorante cucina peruviana. Gestione social standard.",
+      "created": "2025-03-01"
+    },
+    {
+      "id": 3,
+      "name": "Pro Recco Pallavolo",
+      "brand": "STUDIO",
+      "status": "active",
+      "value": 6000,
+      "email": "",
+      "phone": "",
+      "notes": "Club sportivo. Gestione social standard.",
+      "created": "2025-04-01"
+    },
+    {
+      "id": 4,
+      "name": "Tabarca",
+      "brand": "STUDIO",
+      "status": "active",
+      "value": 6000,
+      "email": "",
+      "phone": "",
+      "notes": "Gestione social standard.",
+      "created": "2025-05-01"
+    },
+    {
+      "id": 5,
+      "name": "Zenith Events",
+      "brand": "STUDIO",
+      "status": "active",
+      "value": 6000,
+      "email": "",
+      "phone": "",
+      "notes": "Eventi. Gestione social standard.",
+      "created": "2025-06-01"
+    },
+    {
+      "id": 6,
+      "name": "TopSub",
+      "brand": "STUDIO",
+      "status": "completed",
+      "value": 10000,
+      "email": "",
+      "phone": "",
+      "notes": "Produttore italiano di mute subacquee. Sito web completato.",
+      "created": "2024-10-01"
+    },
+    {
+      "id": 7,
+      "name": "Navaltest Srl",
+      "brand": "STUDIO",
+      "status": "completed",
+      "value": 12000,
+      "email": "",
+      "phone": "",
+      "notes": "Azienda NDT controlli non distruttivi marittimi. Sito web + 3D completato.",
+      "created": "2024-11-01"
+    },
+    {
+      "id": 8,
+      "name": "Excelsior Palace Hotel",
+      "brand": "STUDIO",
+      "status": "active",
+      "value": 15000,
+      "email": "",
+      "phone": "",
+      "notes": "Sito web + AI Chatbot concierge 'Marco' con AI. Progetto flagship.",
+      "created": "2025-02-01"
+    },
+    {
+      "id": 9,
+      "name": "Serravalle Designer Outlet",
+      "brand": "STUDIO",
+      "status": "pending",
+      "value": 18000,
+      "email": "",
+      "phone": "",
+      "notes": "Proposta social media management in preparazione. Leveraging metriche Telenord.",
+      "created": "2026-02-01"
+    },
+    {
+      "id": 10,
+      "name": "Clienti CREA LAB (Associazioni Sportive)",
+      "brand": "LAB",
+      "status": "active",
+      "value": 8000,
+      "email": "",
+      "phone": "",
+      "notes": "Target primario 70%: divise sportive, abbigliamento personalizzato per associazioni.",
+      "created": "2024-09-01"
+    },
+    {
+      "id": 11,
+      "name": "Clienti CREA LAB (PMI)",
+      "brand": "LAB",
+      "status": "active",
+      "value": 12000,
+      "email": "",
+      "phone": "",
+      "notes": "Aziende PMI: merchandising aziendale, gadget promozionali, shopper personalizzate.",
+      "created": "2024-09-01"
+    },
+    {
+      "name": "Haze Cup",
+      "brand": "STUDIO",
+      "status": "active",
+      "value": 11700,
+      "email": "ass.cult.haze@gmail.com",
+      "notes": "Torneo calcio Genova. Contratto 2026: €11.700",
+      "id": 12
+    },
+    {
+      "name": "Tabarca Iberica",
+      "brand": "STUDIO",
+      "status": "active",
+      "value": 4560,
+      "email": "",
+      "phone": "+39 375 531 3194",
+      "notes": "Ristorante, Piazza Bandiera 27R Genova. 12 rate da €380",
+      "id": 13
+    },
+    {
+      "name": "Brisas Peruanas",
+      "brand": "STUDIO",
+      "status": "active",
+      "value": 3840,
+      "email": "",
+      "phone": "+39 346 390 9109",
+      "notes": "Ristorante peruviano, Corso Quadrio. 12 rate da €320",
+      "id": 14
+    },
+    {
+      "name": "Pro Recco Pallavolo",
+      "brand": "STUDIO",
+      "status": "active",
+      "value": 4200,
+      "email": "segreteria@proreccopallavolo.com",
+      "phone": "+39 339 489 8294",
+      "notes": "10 rate da €420. Settembre 2025 - Giugno 2026",
+      "id": 15
+    },
+    {
+      "name": "Hempathia Network",
+      "brand": "STUDIO",
+      "status": "active",
+      "value": 6680,
+      "email": "hempatiaweb@gmail.com",
+      "notes": "Shopify + comunicazione. Cassa netta: €5.085",
+      "id": 16
+    },
+    {
+      "name": "Telenord",
+      "brand": "STUDIO",
+      "status": "active",
+      "value": 0,
+      "notes": "Gestione social + reel automatizzati",
+      "id": 17
+    }
   ],
   "team": [
-    {"id":1,"name":"Leo","role":"Sales & Commerciale / Founder","brand":"Entrambi","projects":4,"workload":80,"email":"","status":"active"},
-    {"id":2,"name":"Arnu","role":"Web Design & Frontend Developer","brand":"Entrambi","projects":5,"workload":90,"email":"","status":"active"},
-    {"id":3,"name":"Ste","role":"Backend Developer","brand":"Entrambi","projects":3,"workload":70,"email":"","status":"active"},
-    {"id":4,"name":"Tommy","role":"Grafica & Piano Editoriale","brand":"STUDIO","projects":6,"workload":85,"email":"","status":"active"},
-    {"id":5,"name":"Matti","role":"Stage Intern / Videomaker","brand":"STUDIO","projects":1,"workload":95,"email":"","status":"active"},
-    {"id":6,"name":"Videomaker Esterno","role":"Produzione Video","brand":"STUDIO","projects":6,"workload":40,"email":"","status":"active"}
+    {
+      "id": 1,
+      "name": "Leo",
+      "role": "Sales & Commerciale / Founder",
+      "brand": "Entrambi",
+      "projects": 4,
+      "workload": 80,
+      "email": "",
+      "status": "active"
+    },
+    {
+      "id": 2,
+      "name": "Arnu",
+      "role": "Web Design & Frontend Developer",
+      "brand": "Entrambi",
+      "projects": 5,
+      "workload": 90,
+      "email": "",
+      "status": "active"
+    },
+    {
+      "id": 3,
+      "name": "Ste",
+      "role": "Backend Developer",
+      "brand": "Entrambi",
+      "projects": 3,
+      "workload": 70,
+      "email": "",
+      "status": "active"
+    },
+    {
+      "id": 4,
+      "name": "Tommy",
+      "role": "Grafica & Piano Editoriale",
+      "brand": "STUDIO",
+      "projects": 6,
+      "workload": 85,
+      "email": "",
+      "status": "active"
+    },
+    {
+      "id": 5,
+      "name": "Matti",
+      "role": "Stage Intern / Videomaker",
+      "brand": "STUDIO",
+      "projects": 1,
+      "workload": 95,
+      "email": "",
+      "status": "active"
+    },
+    {
+      "id": 6,
+      "name": "Videomaker Esterno",
+      "role": "Produzione Video",
+      "brand": "STUDIO",
+      "projects": 6,
+      "workload": 40,
+      "email": "",
+      "status": "active"
+    }
   ],
   "projects": [
-    {"id":1,"name":"Social Media - Telenord","client":"Telenord","brand":"STUDIO","status":"in_progress","progress":60,"deadline":"2026-12-31","budget":24000,"spent":12000,"assignee":"Tommy","description":"5 post/giorno multi-piattaforma. Matti produce 30 reel/giorno. Shoot mensili con videomaker esterno."},
-    {"id":2,"name":"Social Media - Brisas Peruanas","client":"Brisas Peruanas","brand":"STUDIO","status":"in_progress","progress":50,"deadline":"2026-12-31","budget":6000,"spent":2500,"assignee":"Tommy","description":"Gestione social ristorante cucina peruviana. Piano editoriale + contenuti."},
-    {"id":3,"name":"Social Media - Pro Recco","client":"Pro Recco Pallavolo","brand":"STUDIO","status":"in_progress","progress":55,"deadline":"2026-12-31","budget":6000,"spent":2800,"assignee":"Tommy","description":"Gestione social club sportivo pallavolo."},
-    {"id":4,"name":"Social Media - Tabarca","client":"Tabarca","brand":"STUDIO","status":"in_progress","progress":50,"deadline":"2026-12-31","budget":6000,"spent":2500,"assignee":"Tommy","description":"Gestione social completa."},
-    {"id":5,"name":"Social Media - Zenith Events","client":"Zenith Events","brand":"STUDIO","status":"in_progress","progress":45,"deadline":"2026-12-31","budget":6000,"spent":2200,"assignee":"Tommy","description":"Gestione social per azienda eventi."},
-    {"id":6,"name":"Sito Web - TopSub","client":"TopSub","brand":"STUDIO","status":"completed","progress":100,"deadline":"2025-06-01","budget":10000,"spent":9500,"assignee":"Arnu","description":"Sito web produttore italiano mute subacquee. Completato."},
-    {"id":7,"name":"Sito Web + 3D - Navaltest","client":"Navaltest Srl","brand":"STUDIO","status":"completed","progress":100,"deadline":"2025-08-01","budget":12000,"spent":11000,"assignee":"Arnu","description":"Sito web con elementi 3D per azienda NDT marittima. Completato."},
-    {"id":8,"name":"Sito + AI Chatbot - Excelsior Palace","client":"Excelsior Palace Hotel","brand":"STUDIO","status":"in_progress","progress":75,"deadline":"2026-04-30","budget":15000,"spent":8500,"assignee":"Arnu","description":"Sito web + chatbot concierge 'Marco' con AI. Integrazione backend/API. Progetto flagship."},
-    {"id":9,"name":"Proposta Social - Serravalle Outlet","client":"Serravalle Designer Outlet","brand":"STUDIO","status":"backlog","progress":10,"deadline":"2026-05-01","budget":18000,"spent":0,"assignee":"Leo","description":"Proposta commerciale social media management in preparazione."},
-    {"id":10,"name":"Sito CREA STUDIO","client":"CREA STUDIO","brand":"STUDIO","status":"completed","progress":100,"deadline":"2025-01-01","budget":12000,"spent":12000,"assignee":"Arnu","description":"crea-studio.it — Awwwards-level con Three.js r128, spirale 3D, GSAP, Lenis, animazioni cinematiche."},
-    {"id":11,"name":"Sito CREA LAB","client":"CREA LAB","brand":"LAB","status":"in_progress","progress":70,"deadline":"2026-04-01","budget":5000,"spent":2500,"assignee":"Arnu","description":"crealabprint.it — Piattaforma e-commerce con prezzi real-time e mockup generator."},
-    {"id":12,"name":"CREA AI - Film Production","client":"CREA AI","brand":"STUDIO","status":"in_progress","progress":20,"deadline":"2026-09-01","budget":25000,"spent":3000,"assignee":"Arnu","description":"Divisione produzione video AI per Netflix/Amazon Prime. In fase di lancio."},
-    {"id":13,"name":"Reel Telenord - Produzione Matti","client":"Telenord","brand":"STUDIO","status":"in_progress","progress":65,"deadline":"2026-12-31","budget":0,"spent":0,"assignee":"Matti","description":"Produzione 30 reel/giorno per Telenord. Stage interno."}
+    {
+      "id": 1,
+      "name": "Social Media - Telenord",
+      "client": "Telenord",
+      "brand": "STUDIO",
+      "status": "in_progress",
+      "progress": 60,
+      "deadline": "2026-12-31",
+      "budget": 24000,
+      "spent": 12000,
+      "assignee": "Tommy",
+      "description": "5 post/giorno multi-piattaforma. Matti produce 30 reel/giorno. Shoot mensili con videomaker esterno."
+    },
+    {
+      "id": 2,
+      "name": "Social Media - Brisas Peruanas",
+      "client": "Brisas Peruanas",
+      "brand": "STUDIO",
+      "status": "in_progress",
+      "progress": 50,
+      "deadline": "2026-12-31",
+      "budget": 6000,
+      "spent": 2500,
+      "assignee": "Tommy",
+      "description": "Gestione social ristorante cucina peruviana. Piano editoriale + contenuti."
+    },
+    {
+      "id": 3,
+      "name": "Social Media - Pro Recco",
+      "client": "Pro Recco Pallavolo",
+      "brand": "STUDIO",
+      "status": "in_progress",
+      "progress": 55,
+      "deadline": "2026-12-31",
+      "budget": 6000,
+      "spent": 2800,
+      "assignee": "Tommy",
+      "description": "Gestione social club sportivo pallavolo."
+    },
+    {
+      "id": 4,
+      "name": "Social Media - Tabarca",
+      "client": "Tabarca",
+      "brand": "STUDIO",
+      "status": "in_progress",
+      "progress": 50,
+      "deadline": "2026-12-31",
+      "budget": 6000,
+      "spent": 2500,
+      "assignee": "Tommy",
+      "description": "Gestione social completa."
+    },
+    {
+      "id": 5,
+      "name": "Social Media - Zenith Events",
+      "client": "Zenith Events",
+      "brand": "STUDIO",
+      "status": "in_progress",
+      "progress": 45,
+      "deadline": "2026-12-31",
+      "budget": 6000,
+      "spent": 2200,
+      "assignee": "Tommy",
+      "description": "Gestione social per azienda eventi."
+    },
+    {
+      "id": 6,
+      "name": "Sito Web - TopSub",
+      "client": "TopSub",
+      "brand": "STUDIO",
+      "status": "completed",
+      "progress": 100,
+      "deadline": "2025-06-01",
+      "budget": 10000,
+      "spent": 9500,
+      "assignee": "Arnu",
+      "description": "Sito web produttore italiano mute subacquee. Completato."
+    },
+    {
+      "id": 7,
+      "name": "Sito Web + 3D - Navaltest",
+      "client": "Navaltest Srl",
+      "brand": "STUDIO",
+      "status": "completed",
+      "progress": 100,
+      "deadline": "2025-08-01",
+      "budget": 12000,
+      "spent": 11000,
+      "assignee": "Arnu",
+      "description": "Sito web con elementi 3D per azienda NDT marittima. Completato."
+    },
+    {
+      "id": 8,
+      "name": "Sito + AI Chatbot - Excelsior Palace",
+      "client": "Excelsior Palace Hotel",
+      "brand": "STUDIO",
+      "status": "in_progress",
+      "progress": 75,
+      "deadline": "2026-04-30",
+      "budget": 15000,
+      "spent": 8500,
+      "assignee": "Arnu",
+      "description": "Sito web + chatbot concierge 'Marco' con AI. Integrazione backend/API. Progetto flagship."
+    },
+    {
+      "id": 9,
+      "name": "Proposta Social - Serravalle Outlet",
+      "client": "Serravalle Designer Outlet",
+      "brand": "STUDIO",
+      "status": "backlog",
+      "progress": 10,
+      "deadline": "2026-05-01",
+      "budget": 18000,
+      "spent": 0,
+      "assignee": "Leo",
+      "description": "Proposta commerciale social media management in preparazione."
+    },
+    {
+      "id": 10,
+      "name": "Sito CREA STUDIO",
+      "client": "CREA STUDIO",
+      "brand": "STUDIO",
+      "status": "completed",
+      "progress": 100,
+      "deadline": "2025-01-01",
+      "budget": 12000,
+      "spent": 12000,
+      "assignee": "Arnu",
+      "description": "crea-studio.it — Awwwards-level con Three.js r128, spirale 3D, GSAP, Lenis, animazioni cinematiche."
+    },
+    {
+      "id": 11,
+      "name": "Sito CREA LAB",
+      "client": "CREA LAB",
+      "brand": "LAB",
+      "status": "in_progress",
+      "progress": 70,
+      "deadline": "2026-04-01",
+      "budget": 5000,
+      "spent": 2500,
+      "assignee": "Arnu",
+      "description": "crealabprint.it — Piattaforma e-commerce con prezzi real-time e mockup generator."
+    },
+    {
+      "id": 12,
+      "name": "CREA AI - Film Production",
+      "client": "CREA AI",
+      "brand": "STUDIO",
+      "status": "in_progress",
+      "progress": 20,
+      "deadline": "2026-09-01",
+      "budget": 25000,
+      "spent": 3000,
+      "assignee": "Arnu",
+      "description": "Divisione produzione video AI per Netflix/Amazon Prime. In fase di lancio."
+    },
+    {
+      "id": 13,
+      "name": "Reel Telenord - Produzione Matti",
+      "client": "Telenord",
+      "brand": "STUDIO",
+      "status": "in_progress",
+      "progress": 65,
+      "deadline": "2026-12-31",
+      "budget": 0,
+      "spent": 0,
+      "assignee": "Matti",
+      "description": "Produzione 30 reel/giorno per Telenord. Stage interno."
+    }
   ],
   "automations": [
-    {"id":1,"name":"Social Posting Scheduler","description":"Programmazione automatica post social per tutti i clienti CREA STUDIO","trigger":"Ogni giorno secondo piano editoriale","active":true,"runs":850,"lastRun":"2026-02-25T08:00:00"},
-    {"id":2,"name":"Report Mensile Clienti","description":"Genera report performance con KPI, analytics e metriche per ogni cliente social","trigger":"Primo di ogni mese","active":true,"runs":18,"lastRun":"2026-02-01T09:00:00"},
-    {"id":3,"name":"Notifica Scadenza Progetti","description":"Avvisa 7 giorni prima della scadenza di un progetto web","trigger":"7gg prima scadenza","active":true,"runs":12,"lastRun":"2026-02-20T08:00:00"},
-    {"id":4,"name":"AI Chatbot Excelsior - Marco","description":"Concierge digitale AI per Excelsior Palace Hotel. Gestisce booking, info, supporto ospiti 24/7","trigger":"Richiesta ospite su sito hotel","active":true,"runs":2340,"lastRun":"2026-02-25T11:30:00"},
-    {"id":5,"name":"Mockup Generator CREA LAB","description":"Genera automaticamente mockup prodotto personalizzato quando il cliente carica un design","trigger":"Upload design su crealabprint.it","active":true,"runs":156,"lastRun":"2026-02-24T16:45:00"},
-    {"id":6,"name":"Preventivo Automatico LAB","description":"Calcolo prezzi real-time per prodotti personalizzati su piattaforma CREA LAB","trigger":"Configurazione prodotto completata","active":true,"runs":430,"lastRun":"2026-02-25T10:15:00"},
-    {"id":7,"name":"Backup Database Giornaliero","description":"Backup automatico dati dashboard e progetti ogni sera","trigger":"Ogni giorno 23:00","active":true,"runs":120,"lastRun":"2026-02-24T23:00:00"},
-    {"id":8,"name":"Notifica Nuovo Lead","description":"Avvisa Leo quando arriva un nuovo potenziale cliente via form contatto","trigger":"Nuovo form compilato","active":true,"runs":67,"lastRun":"2026-02-23T14:20:00"}
+    {
+      "id": 1,
+      "name": "Social Posting Scheduler",
+      "description": "Programmazione automatica post social per tutti i clienti CREA STUDIO",
+      "trigger": "Ogni giorno secondo piano editoriale",
+      "active": true,
+      "runs": 850,
+      "lastRun": "2026-02-25T08:00:00"
+    },
+    {
+      "id": 2,
+      "name": "Report Mensile Clienti",
+      "description": "Genera report performance con KPI, analytics e metriche per ogni cliente social",
+      "trigger": "Primo di ogni mese",
+      "active": true,
+      "runs": 18,
+      "lastRun": "2026-02-01T09:00:00"
+    },
+    {
+      "id": 3,
+      "name": "Notifica Scadenza Progetti",
+      "description": "Avvisa 7 giorni prima della scadenza di un progetto web",
+      "trigger": "7gg prima scadenza",
+      "active": true,
+      "runs": 12,
+      "lastRun": "2026-02-20T08:00:00"
+    },
+    {
+      "id": 4,
+      "name": "AI Chatbot Excelsior - Marco",
+      "description": "Concierge digitale AI per Excelsior Palace Hotel. Gestisce booking, info, supporto ospiti 24/7",
+      "trigger": "Richiesta ospite su sito hotel",
+      "active": true,
+      "runs": 2340,
+      "lastRun": "2026-02-25T11:30:00"
+    },
+    {
+      "id": 5,
+      "name": "Mockup Generator CREA LAB",
+      "description": "Genera automaticamente mockup prodotto personalizzato quando il cliente carica un design",
+      "trigger": "Upload design su crealabprint.it",
+      "active": true,
+      "runs": 156,
+      "lastRun": "2026-02-24T16:45:00"
+    },
+    {
+      "id": 6,
+      "name": "Preventivo Automatico LAB",
+      "description": "Calcolo prezzi real-time per prodotti personalizzati su piattaforma CREA LAB",
+      "trigger": "Configurazione prodotto completata",
+      "active": true,
+      "runs": 430,
+      "lastRun": "2026-02-25T10:15:00"
+    },
+    {
+      "id": 7,
+      "name": "Backup Database Giornaliero",
+      "description": "Backup automatico dati dashboard e progetti ogni sera",
+      "trigger": "Ogni giorno 23:00",
+      "active": true,
+      "runs": 120,
+      "lastRun": "2026-02-24T23:00:00"
+    },
+    {
+      "id": 8,
+      "name": "Notifica Nuovo Lead",
+      "description": "Avvisa Leo quando arriva un nuovo potenziale cliente via form contatto",
+      "trigger": "Nuovo form compilato",
+      "active": true,
+      "runs": 67,
+      "lastRun": "2026-02-23T14:20:00"
+    }
   ],
   "finance": [
-    {"id":1,"date":"2026-02-01","description":"Retainer Telenord - Febbraio","brand":"STUDIO","type":"entrata","amount":2000},
-    {"id":2,"date":"2026-02-01","description":"Retainer Brisas Peruanas - Febbraio","brand":"STUDIO","type":"entrata","amount":500},
-    {"id":3,"date":"2026-02-01","description":"Retainer Pro Recco - Febbraio","brand":"STUDIO","type":"entrata","amount":500},
-    {"id":4,"date":"2026-02-01","description":"Retainer Tabarca - Febbraio","brand":"STUDIO","type":"entrata","amount":500},
-    {"id":5,"date":"2026-02-01","description":"Retainer Zenith Events - Febbraio","brand":"STUDIO","type":"entrata","amount":500},
-    {"id":6,"date":"2026-02-10","description":"Acconto Excelsior Palace - Chatbot AI","brand":"STUDIO","type":"entrata","amount":5000},
-    {"id":7,"date":"2026-02-05","description":"Abbonamento Adobe CC","brand":"STUDIO","type":"uscita","amount":350},
-    {"id":8,"date":"2026-02-05","description":"Hosting + Domini (crea-studio.it, crealabprint.it)","brand":"STUDIO","type":"uscita","amount":250},
-    {"id":9,"date":"2026-02-10","description":"Videomaker esterno - Shoot mensile","brand":"STUDIO","type":"uscita","amount":800},
-    {"id":10,"date":"2026-02-15","description":"Vendite stampa personalizzata - Associazioni sportive","brand":"LAB","type":"entrata","amount":3200},
-    {"id":11,"date":"2026-02-18","description":"Vendite merchandising aziendale - PMI","brand":"LAB","type":"entrata","amount":1800},
-    {"id":12,"date":"2026-02-08","description":"Materiali stampa DTF + Ricamo","brand":"LAB","type":"uscita","amount":1500},
-    {"id":13,"date":"2026-01-15","description":"Saldo TopSub - Sito web completato","brand":"STUDIO","type":"entrata","amount":5000},
-    {"id":14,"date":"2026-01-20","description":"Saldo Navaltest - Sito + 3D completato","brand":"STUDIO","type":"entrata","amount":6000},
-    {"id":15,"date":"2026-01-01","description":"Retainer tutti clienti social - Gennaio","brand":"STUDIO","type":"entrata","amount":4000},
-    {"id":16,"date":"2026-01-10","description":"Vendite CREA LAB - Gennaio","brand":"LAB","type":"entrata","amount":4500},
-    {"id":17,"date":"2026-01-05","description":"Abbonamento strumenti AI (Claude, GPT, Midjourney)","brand":"STUDIO","type":"uscita","amount":200},
-    {"id":18,"date":"2025-12-15","description":"Pagamento Excelsior Palace - Fase 1","brand":"STUDIO","type":"entrata","amount":5000},
-    {"id":19,"date":"2025-12-01","description":"Retainer clienti social - Dicembre","brand":"STUDIO","type":"entrata","amount":4000},
-    {"id":20,"date":"2025-11-15","description":"Acconto Navaltest","brand":"STUDIO","type":"entrata","amount":6000}
+    {
+      "id": 1,
+      "date": "2026-02-01",
+      "description": "Retainer Telenord - Febbraio",
+      "brand": "STUDIO",
+      "type": "entrata",
+      "amount": 2000
+    },
+    {
+      "id": 2,
+      "date": "2026-02-01",
+      "description": "Retainer Brisas Peruanas - Febbraio",
+      "brand": "STUDIO",
+      "type": "entrata",
+      "amount": 500
+    },
+    {
+      "id": 3,
+      "date": "2026-02-01",
+      "description": "Retainer Pro Recco - Febbraio",
+      "brand": "STUDIO",
+      "type": "entrata",
+      "amount": 500
+    },
+    {
+      "id": 4,
+      "date": "2026-02-01",
+      "description": "Retainer Tabarca - Febbraio",
+      "brand": "STUDIO",
+      "type": "entrata",
+      "amount": 500
+    },
+    {
+      "id": 5,
+      "date": "2026-02-01",
+      "description": "Retainer Zenith Events - Febbraio",
+      "brand": "STUDIO",
+      "type": "entrata",
+      "amount": 500
+    },
+    {
+      "id": 6,
+      "date": "2026-02-10",
+      "description": "Acconto Excelsior Palace - Chatbot AI",
+      "brand": "STUDIO",
+      "type": "entrata",
+      "amount": 5000
+    },
+    {
+      "id": 7,
+      "date": "2026-02-05",
+      "description": "Abbonamento Adobe CC",
+      "brand": "STUDIO",
+      "type": "uscita",
+      "amount": 350
+    },
+    {
+      "id": 8,
+      "date": "2026-02-05",
+      "description": "Hosting + Domini (crea-studio.it, crealabprint.it)",
+      "brand": "STUDIO",
+      "type": "uscita",
+      "amount": 250
+    },
+    {
+      "id": 9,
+      "date": "2026-02-10",
+      "description": "Videomaker esterno - Shoot mensile",
+      "brand": "STUDIO",
+      "type": "uscita",
+      "amount": 800
+    },
+    {
+      "id": 10,
+      "date": "2026-02-15",
+      "description": "Vendite stampa personalizzata - Associazioni sportive",
+      "brand": "LAB",
+      "type": "entrata",
+      "amount": 3200
+    },
+    {
+      "id": 11,
+      "date": "2026-02-18",
+      "description": "Vendite merchandising aziendale - PMI",
+      "brand": "LAB",
+      "type": "entrata",
+      "amount": 1800
+    },
+    {
+      "id": 12,
+      "date": "2026-02-08",
+      "description": "Materiali stampa DTF + Ricamo",
+      "brand": "LAB",
+      "type": "uscita",
+      "amount": 1500
+    },
+    {
+      "id": 13,
+      "date": "2026-01-15",
+      "description": "Saldo TopSub - Sito web completato",
+      "brand": "STUDIO",
+      "type": "entrata",
+      "amount": 5000
+    },
+    {
+      "id": 14,
+      "date": "2026-01-20",
+      "description": "Saldo Navaltest - Sito + 3D completato",
+      "brand": "STUDIO",
+      "type": "entrata",
+      "amount": 6000
+    },
+    {
+      "id": 15,
+      "date": "2026-01-01",
+      "description": "Retainer tutti clienti social - Gennaio",
+      "brand": "STUDIO",
+      "type": "entrata",
+      "amount": 4000
+    },
+    {
+      "id": 16,
+      "date": "2026-01-10",
+      "description": "Vendite CREA LAB - Gennaio",
+      "brand": "LAB",
+      "type": "entrata",
+      "amount": 4500
+    },
+    {
+      "id": 17,
+      "date": "2026-01-05",
+      "description": "Abbonamento strumenti AI (Claude, GPT, Midjourney)",
+      "brand": "STUDIO",
+      "type": "uscita",
+      "amount": 200
+    },
+    {
+      "id": 18,
+      "date": "2025-12-15",
+      "description": "Pagamento Excelsior Palace - Fase 1",
+      "brand": "STUDIO",
+      "type": "entrata",
+      "amount": 5000
+    },
+    {
+      "id": 19,
+      "date": "2025-12-01",
+      "description": "Retainer clienti social - Dicembre",
+      "brand": "STUDIO",
+      "type": "entrata",
+      "amount": 4000
+    },
+    {
+      "id": 20,
+      "date": "2025-11-15",
+      "description": "Acconto Navaltest",
+      "brand": "STUDIO",
+      "type": "entrata",
+      "amount": 6000
+    },
+    {
+      "date": "2025-04-02",
+      "description": "Hempathia - Acconto",
+      "brand": "STUDIO",
+      "type": "entrata",
+      "amount": 820,
+      "id": 21
+    },
+    {
+      "date": "2025-05-06",
+      "description": "Hempathia - Seconda rata",
+      "brand": "STUDIO",
+      "type": "entrata",
+      "amount": 820,
+      "id": 22
+    },
+    {
+      "date": "2025-06-06",
+      "description": "Hempathia - Terza rata",
+      "brand": "STUDIO",
+      "type": "entrata",
+      "amount": 1000,
+      "id": 23
+    },
+    {
+      "date": "2025-07-15",
+      "description": "Hempathia - Quarta rata",
+      "brand": "STUDIO",
+      "type": "entrata",
+      "amount": 1000,
+      "id": 24
+    },
+    {
+      "date": "2025-09-04",
+      "description": "Hempathia - Quinta rata",
+      "brand": "STUDIO",
+      "type": "entrata",
+      "amount": 1000,
+      "id": 25
+    },
+    {
+      "date": "2025-10-07",
+      "description": "Hempathia - Sesta rata",
+      "brand": "STUDIO",
+      "type": "entrata",
+      "amount": 1000,
+      "id": 26
+    },
+    {
+      "date": "2024-12-23",
+      "description": "Haze Cup 2025 - Acconto",
+      "brand": "STUDIO",
+      "type": "entrata",
+      "amount": 2000,
+      "id": 27
+    },
+    {
+      "date": "2025-05-30",
+      "description": "Haze Cup 2025 - Seconda rata",
+      "brand": "STUDIO",
+      "type": "entrata",
+      "amount": 3000,
+      "id": 28
+    },
+    {
+      "date": "2025-05-06",
+      "description": "Haze Cup 2025 - Terza rata",
+      "brand": "STUDIO",
+      "type": "entrata",
+      "amount": 2000,
+      "id": 29
+    },
+    {
+      "date": "2025-06-09",
+      "description": "Haze Cup 2025 - Quarta rata",
+      "brand": "STUDIO",
+      "type": "entrata",
+      "amount": 1500,
+      "id": 30
+    },
+    {
+      "date": "2025-07-17",
+      "description": "Haze Cup 2025 - Quinta rata",
+      "brand": "STUDIO",
+      "type": "entrata",
+      "amount": 1500,
+      "id": 31
+    },
+    {
+      "date": "2025-04-01",
+      "description": "Haze Cup - Obiettivo",
+      "brand": "STUDIO",
+      "type": "uscita",
+      "amount": 2200,
+      "id": 32
+    },
+    {
+      "date": "2025-05-24",
+      "description": "Haze Cup - Mac Azienda",
+      "brand": "STUDIO",
+      "type": "uscita",
+      "amount": 1049,
+      "id": 33
+    },
+    {
+      "date": "2025-05-24",
+      "description": "Haze Cup - Protezione Mac + SanDisk",
+      "brand": "STUDIO",
+      "type": "uscita",
+      "amount": 145,
+      "id": 34
+    },
+    {
+      "date": "2025-07-31",
+      "description": "Haze Cup - Pagamenti team (Simo, Marvin, Luca, Flavio)",
+      "brand": "STUDIO",
+      "type": "uscita",
+      "amount": 1660,
+      "id": 35
+    },
+    {
+      "date": "2025-12-01",
+      "description": "CREA LAB - Delfino Bianco (profitto)",
+      "brand": "LAB",
+      "type": "entrata",
+      "amount": 388,
+      "id": 36
+    },
+    {
+      "date": "2025-12-15",
+      "description": "CREA LAB - Barberis (profitto)",
+      "brand": "LAB",
+      "type": "entrata",
+      "amount": 379,
+      "id": 37
+    },
+    {
+      "date": "2026-01-10",
+      "description": "CREA LAB - Rinnova Lab (profitto)",
+      "brand": "LAB",
+      "type": "entrata",
+      "amount": 243,
+      "id": 38
+    },
+    {
+      "date": "2026-02-01",
+      "description": "Abbonamenti mensili (ChatGPT, Adobe, Canva, ecc.)",
+      "brand": "STUDIO",
+      "type": "uscita",
+      "amount": 446,
+      "id": 39
+    },
+    {
+      "date": "2025-09-01",
+      "description": "Pro Recco - Rata settembre",
+      "brand": "STUDIO",
+      "type": "entrata",
+      "amount": 420,
+      "id": 40
+    },
+    {
+      "date": "2025-10-01",
+      "description": "Pro Recco - Rata ottobre",
+      "brand": "STUDIO",
+      "type": "entrata",
+      "amount": 420,
+      "id": 41
+    },
+    {
+      "date": "2025-11-01",
+      "description": "Pro Recco - Rata novembre",
+      "brand": "STUDIO",
+      "type": "entrata",
+      "amount": 420,
+      "id": 42
+    },
+    {
+      "date": "2025-12-01",
+      "description": "Pro Recco - Rata dicembre",
+      "brand": "STUDIO",
+      "type": "entrata",
+      "amount": 420,
+      "id": 43
+    },
+    {
+      "date": "2026-01-01",
+      "description": "Pro Recco - Rata gennaio",
+      "brand": "STUDIO",
+      "type": "entrata",
+      "amount": 420,
+      "id": 44
+    },
+    {
+      "date": "2026-02-01",
+      "description": "Pro Recco - Rata febbraio",
+      "brand": "STUDIO",
+      "type": "entrata",
+      "amount": 420,
+      "id": 45
+    },
+    {
+      "date": "2025-11-19",
+      "description": "Brisas Peruanas - Rata novembre",
+      "brand": "STUDIO",
+      "type": "entrata",
+      "amount": 320,
+      "id": 46
+    },
+    {
+      "date": "2025-12-19",
+      "description": "Brisas Peruanas - Rata dicembre",
+      "brand": "STUDIO",
+      "type": "entrata",
+      "amount": 320,
+      "id": 47
+    },
+    {
+      "date": "2026-01-19",
+      "description": "Brisas Peruanas - Rata gennaio",
+      "brand": "STUDIO",
+      "type": "entrata",
+      "amount": 320,
+      "id": 48
+    }
   ],
   "activity": [
-    {"action":"Sistema","detail":"Dashboard popolata con dati reali CREA","date":"2026-02-25T12:00:00.000Z"},
-    {"action":"AI Insight","detail":"Proposta Serravalle Outlet in preparazione — valore potenziale €18K","date":"2026-02-25T11:00:00.000Z"},
-    {"action":"Progetto","detail":"Excelsior Palace Chatbot AI al 75% — fase test","date":"2026-02-24T16:00:00.000Z"},
-    {"action":"Automazione","detail":"Chatbot Marco (Excelsior) ha gestito 45 richieste oggi","date":"2026-02-24T22:00:00.000Z"},
-    {"action":"CREA LAB","detail":"15 ordini stampa personalizzata questa settimana","date":"2026-02-24T18:00:00.000Z"},
-    {"action":"Social","detail":"Telenord: 5 post pubblicati oggi su tutte le piattaforme","date":"2026-02-25T09:00:00.000Z"},
-    {"action":"Matti","detail":"30 reel prodotti oggi per Telenord","date":"2026-02-25T17:00:00.000Z"},
-    {"action":"Lead","detail":"Nuovo contatto da Serravalle Designer Outlet","date":"2026-02-20T14:30:00.000Z"}
+    {
+      "action": "Nuovo financ",
+      "detail": "Aggiunto: Brisas Peruanas - Rata gennaio",
+      "date": "2026-02-25T11:18:31.153Z"
+    },
+    {
+      "action": "Nuovo financ",
+      "detail": "Aggiunto: Brisas Peruanas - Rata dicembre",
+      "date": "2026-02-25T11:18:31.151Z"
+    },
+    {
+      "action": "Nuovo financ",
+      "detail": "Aggiunto: Brisas Peruanas - Rata novembre",
+      "date": "2026-02-25T11:18:31.149Z"
+    },
+    {
+      "action": "Nuovo financ",
+      "detail": "Aggiunto: Pro Recco - Rata febbraio",
+      "date": "2026-02-25T11:18:31.148Z"
+    },
+    {
+      "action": "Nuovo financ",
+      "detail": "Aggiunto: Pro Recco - Rata gennaio",
+      "date": "2026-02-25T11:18:31.146Z"
+    },
+    {
+      "action": "Nuovo financ",
+      "detail": "Aggiunto: Pro Recco - Rata dicembre",
+      "date": "2026-02-25T11:18:31.145Z"
+    },
+    {
+      "action": "Nuovo financ",
+      "detail": "Aggiunto: Pro Recco - Rata novembre",
+      "date": "2026-02-25T11:18:31.143Z"
+    },
+    {
+      "action": "Nuovo financ",
+      "detail": "Aggiunto: Pro Recco - Rata ottobre",
+      "date": "2026-02-25T11:18:31.141Z"
+    },
+    {
+      "action": "Nuovo financ",
+      "detail": "Aggiunto: Pro Recco - Rata settembre",
+      "date": "2026-02-25T11:18:31.140Z"
+    },
+    {
+      "action": "Nuovo financ",
+      "detail": "Aggiunto: Abbonamenti mensili (ChatGPT, Adobe, Canva, ecc.)",
+      "date": "2026-02-25T11:18:31.138Z"
+    },
+    {
+      "action": "Nuovo financ",
+      "detail": "Aggiunto: CREA LAB - Rinnova Lab (profitto)",
+      "date": "2026-02-25T11:18:31.136Z"
+    },
+    {
+      "action": "Nuovo financ",
+      "detail": "Aggiunto: CREA LAB - Barberis (profitto)",
+      "date": "2026-02-25T11:18:31.134Z"
+    },
+    {
+      "action": "Nuovo financ",
+      "detail": "Aggiunto: CREA LAB - Delfino Bianco (profitto)",
+      "date": "2026-02-25T11:18:31.132Z"
+    },
+    {
+      "action": "Nuovo financ",
+      "detail": "Aggiunto: Haze Cup - Pagamenti team (Simo, Marvin, Luca, Flavio)",
+      "date": "2026-02-25T11:18:31.131Z"
+    },
+    {
+      "action": "Nuovo financ",
+      "detail": "Aggiunto: Haze Cup - Protezione Mac + SanDisk",
+      "date": "2026-02-25T11:18:31.129Z"
+    },
+    {
+      "action": "Nuovo financ",
+      "detail": "Aggiunto: Haze Cup - Mac Azienda",
+      "date": "2026-02-25T11:18:31.128Z"
+    },
+    {
+      "action": "Nuovo financ",
+      "detail": "Aggiunto: Haze Cup - Obiettivo",
+      "date": "2026-02-25T11:18:31.126Z"
+    },
+    {
+      "action": "Nuovo financ",
+      "detail": "Aggiunto: Haze Cup 2025 - Quinta rata",
+      "date": "2026-02-25T11:18:31.125Z"
+    },
+    {
+      "action": "Nuovo financ",
+      "detail": "Aggiunto: Haze Cup 2025 - Quarta rata",
+      "date": "2026-02-25T11:18:31.123Z"
+    },
+    {
+      "action": "Nuovo financ",
+      "detail": "Aggiunto: Haze Cup 2025 - Terza rata",
+      "date": "2026-02-25T11:18:31.121Z"
+    },
+    {
+      "action": "Nuovo financ",
+      "detail": "Aggiunto: Haze Cup 2025 - Seconda rata",
+      "date": "2026-02-25T11:18:31.120Z"
+    },
+    {
+      "action": "Nuovo financ",
+      "detail": "Aggiunto: Haze Cup 2025 - Acconto",
+      "date": "2026-02-25T11:18:31.118Z"
+    },
+    {
+      "action": "Nuovo financ",
+      "detail": "Aggiunto: Hempathia - Sesta rata",
+      "date": "2026-02-25T11:18:31.116Z"
+    },
+    {
+      "action": "Nuovo financ",
+      "detail": "Aggiunto: Hempathia - Quinta rata",
+      "date": "2026-02-25T11:18:31.114Z"
+    },
+    {
+      "action": "Nuovo financ",
+      "detail": "Aggiunto: Hempathia - Quarta rata",
+      "date": "2026-02-25T11:18:31.113Z"
+    },
+    {
+      "action": "Nuovo financ",
+      "detail": "Aggiunto: Hempathia - Terza rata",
+      "date": "2026-02-25T11:18:31.111Z"
+    },
+    {
+      "action": "Nuovo financ",
+      "detail": "Aggiunto: Hempathia - Seconda rata",
+      "date": "2026-02-25T11:18:31.109Z"
+    },
+    {
+      "action": "Nuovo financ",
+      "detail": "Aggiunto: Hempathia - Acconto",
+      "date": "2026-02-25T11:18:31.108Z"
+    },
+    {
+      "action": "Nuovo client",
+      "detail": "Aggiunto: Telenord",
+      "date": "2026-02-25T11:18:31.106Z"
+    },
+    {
+      "action": "Nuovo client",
+      "detail": "Aggiunto: Hempathia Network",
+      "date": "2026-02-25T11:18:31.105Z"
+    },
+    {
+      "action": "Nuovo client",
+      "detail": "Aggiunto: Pro Recco Pallavolo",
+      "date": "2026-02-25T11:18:31.103Z"
+    },
+    {
+      "action": "Nuovo client",
+      "detail": "Aggiunto: Brisas Peruanas",
+      "date": "2026-02-25T11:18:31.102Z"
+    },
+    {
+      "action": "Nuovo client",
+      "detail": "Aggiunto: Tabarca Iberica",
+      "date": "2026-02-25T11:18:31.100Z"
+    },
+    {
+      "action": "Nuovo client",
+      "detail": "Aggiunto: Haze Cup",
+      "date": "2026-02-25T11:18:31.099Z"
+    },
+    {
+      "action": "Nuovo lab_order",
+      "detail": "Aggiunto: N/D",
+      "date": "2026-02-25T11:18:31.097Z"
+    },
+    {
+      "action": "Nuovo lab_order",
+      "detail": "Aggiunto: N/D",
+      "date": "2026-02-25T11:18:31.096Z"
+    },
+    {
+      "action": "Nuovo lab_order",
+      "detail": "Aggiunto: N/D",
+      "date": "2026-02-25T11:18:31.094Z"
+    },
+    {
+      "action": "Nuovo lab_order",
+      "detail": "Aggiunto: N/D",
+      "date": "2026-02-25T11:18:31.092Z"
+    },
+    {
+      "action": "Nuovo lab_order",
+      "detail": "Aggiunto: N/D",
+      "date": "2026-02-25T11:18:31.088Z"
+    },
+    {
+      "action": "Nuovo lab_order",
+      "detail": "Aggiunto: N/D",
+      "date": "2026-02-25T11:18:31.086Z"
+    },
+    {
+      "action": "Nuovo lab_order",
+      "detail": "Aggiunto: N/D",
+      "date": "2026-02-25T11:18:31.084Z"
+    },
+    {
+      "action": "Nuovo lab_order",
+      "detail": "Aggiunto: N/D",
+      "date": "2026-02-25T11:18:31.082Z"
+    },
+    {
+      "action": "Nuovo lab_order",
+      "detail": "Aggiunto: N/D",
+      "date": "2026-02-25T11:18:31.080Z"
+    },
+    {
+      "action": "Nuovo lab_order",
+      "detail": "Aggiunto: N/D",
+      "date": "2026-02-25T11:18:31.079Z"
+    },
+    {
+      "action": "Nuovo subscription",
+      "detail": "Aggiunto: Iliad CREA LAB",
+      "date": "2026-02-25T11:18:31.077Z"
+    },
+    {
+      "action": "Nuovo subscription",
+      "detail": "Aggiunto: Pancdora Pro",
+      "date": "2026-02-25T11:18:31.075Z"
+    },
+    {
+      "action": "Nuovo subscription",
+      "detail": "Aggiunto: Canva",
+      "date": "2026-02-25T11:18:31.074Z"
+    },
+    {
+      "action": "Nuovo subscription",
+      "detail": "Aggiunto: Google Workspace",
+      "date": "2026-02-25T11:18:31.072Z"
+    },
+    {
+      "action": "Nuovo subscription",
+      "detail": "Aggiunto: Adobe Pro",
+      "date": "2026-02-25T11:18:31.069Z"
+    },
+    {
+      "action": "Nuovo subscription",
+      "detail": "Aggiunto: Higgsfield",
+      "date": "2026-02-25T11:18:31.066Z"
+    },
+    {
+      "action": "Nuovo subscription",
+      "detail": "Aggiunto: ChatGPT Pro",
+      "date": "2026-02-25T11:18:31.064Z"
+    },
+    {
+      "action": "Nuovo contract",
+      "detail": "Aggiunto: Comunicazione digitale completa torneo HAZE CUP 2025",
+      "date": "2026-02-25T11:18:31.062Z"
+    },
+    {
+      "action": "Nuovo contract",
+      "detail": "Aggiunto: Progetto web Shopify + comunicazione",
+      "date": "2026-02-25T11:18:31.060Z"
+    },
+    {
+      "action": "Nuovo contract",
+      "detail": "Aggiunto: Piano marketing società sportiva (FB, IG, TikTok, Photo, Video, Graphic)",
+      "date": "2026-02-25T11:18:31.058Z"
+    },
+    {
+      "action": "Nuovo contract",
+      "detail": "Aggiunto: Piano marketing ristorante (FB, IG, Photo, Video, Graphic, Personal Branding)",
+      "date": "2026-02-25T11:18:31.056Z"
+    },
+    {
+      "action": "Nuovo contract",
+      "detail": "Aggiunto: Comunicazione digitale ristorante (FB, IG, Photo&Video, Graphic, Brand Identity)",
+      "date": "2026-02-25T11:18:31.053Z"
+    },
+    {
+      "action": "Nuovo contract",
+      "detail": "Aggiunto: Piano comunicazione digitale HAZE CUP 2026 (FB, IG, TikTok, Photo, Video, Graphic)",
+      "date": "2026-02-25T11:18:31.048Z"
+    },
+    {
+      "action": "Sistema",
+      "detail": "Dashboard popolata con dati reali CREA",
+      "date": "2026-02-25T12:00:00.000Z"
+    },
+    {
+      "action": "AI Insight",
+      "detail": "Proposta Serravalle Outlet in preparazione — valore potenziale €18K",
+      "date": "2026-02-25T11:00:00.000Z"
+    },
+    {
+      "action": "Progetto",
+      "detail": "Excelsior Palace Chatbot AI al 75% — fase test",
+      "date": "2026-02-24T16:00:00.000Z"
+    },
+    {
+      "action": "Automazione",
+      "detail": "Chatbot Marco (Excelsior) ha gestito 45 richieste oggi",
+      "date": "2026-02-24T22:00:00.000Z"
+    },
+    {
+      "action": "CREA LAB",
+      "detail": "15 ordini stampa personalizzata questa settimana",
+      "date": "2026-02-24T18:00:00.000Z"
+    },
+    {
+      "action": "Social",
+      "detail": "Telenord: 5 post pubblicati oggi su tutte le piattaforme",
+      "date": "2026-02-25T09:00:00.000Z"
+    },
+    {
+      "action": "Matti",
+      "detail": "30 reel prodotti oggi per Telenord",
+      "date": "2026-02-25T17:00:00.000Z"
+    },
+    {
+      "action": "Lead",
+      "detail": "Nuovo contatto da Serravalle Designer Outlet",
+      "date": "2026-02-20T14:30:00.000Z"
+    }
   ],
   "settings": {
     "companyName": "CREA",
@@ -85,5 +1206,242 @@
     "city": "Genova",
     "founded": "2024",
     "divisions": "CREA STUDIO, CREA LAB, CREA AI"
-  }
+  },
+  "calendar": [],
+  "woo_orders": [
+    {
+      "id": 32726,
+      "number": "32726",
+      "status": "processing",
+      "total": "43.01",
+      "currency": "EUR",
+      "customer": "Francesco Massone",
+      "email": "massonefrancescoy@gmail.com",
+      "phone": "3883072326",
+      "city": "Genova",
+      "date": "2026-02-20T09:37:29",
+      "items": [
+        {
+          "name": "Felpa SLAM KIDS - 13255 - Sol's",
+          "qty": 1,
+          "total": "35.25"
+        }
+      ],
+      "payment_method": "Carta",
+      "note": "Il file di stampa presenta un disegno di colore Nero, va stampato Bianco."
+    }
+  ],
+  "contracts": [
+    {
+      "contract_number": "108_26",
+      "client_name": "Haze Cup 2026",
+      "description": "Piano comunicazione digitale HAZE CUP 2026 (FB, IG, TikTok, Photo, Video, Graphic)",
+      "total_value": 11700,
+      "monthly_rate": 0,
+      "collected": 0,
+      "status": "active",
+      "start_date": "2026-01-21",
+      "end_date": "",
+      "notes": "Durata: intero torneo 2026. Include: social €3.800, foto €2.100, video €2.800, grafica €1.800, editoriale €200, pre-torneo €800, comunicazioni straordinarie €200",
+      "id": 1
+    },
+    {
+      "contract_number": "112_26",
+      "client_name": "Tabarca Iberica",
+      "description": "Comunicazione digitale ristorante (FB, IG, Photo&Video, Graphic, Brand Identity)",
+      "total_value": 4560,
+      "monthly_rate": 380,
+      "collected": 0,
+      "status": "active",
+      "start_date": "2026-02-12",
+      "end_date": "2027-02-02",
+      "notes": "12 rate mensili da €380. Listino €5.400, sconto a €4.560. 1 shooting ogni 2 mesi, 1 post/settimana",
+      "id": 2
+    },
+    {
+      "contract_number": "128_25",
+      "client_name": "Brisas Peruanas",
+      "description": "Piano marketing ristorante (FB, IG, Photo, Video, Graphic, Personal Branding)",
+      "total_value": 3840,
+      "monthly_rate": 320,
+      "collected": 960,
+      "status": "active",
+      "start_date": "2025-11-19",
+      "end_date": "2026-11-19",
+      "notes": "12 rate mensili da €320. Listino €5.760, sconto a €3.840. 3 post/settimana, shooting mensile",
+      "id": 3
+    },
+    {
+      "contract_number": "123_25",
+      "client_name": "Pro Recco Pallavolo",
+      "description": "Piano marketing società sportiva (FB, IG, TikTok, Photo, Video, Graphic)",
+      "total_value": 4200,
+      "monthly_rate": 420,
+      "collected": 2520,
+      "status": "active",
+      "start_date": "2025-09-01",
+      "end_date": "2026-06-30",
+      "notes": "10 rate mensili da €420. Listino €5.800, sconto a €4.200. 3 post/settimana + 1 reel/settimana + TikTok",
+      "id": 4
+    },
+    {
+      "contract_number": "HN_25",
+      "client_name": "Hempathia Network",
+      "description": "Progetto web Shopify + comunicazione",
+      "total_value": 6680,
+      "monthly_rate": 0,
+      "collected": 5639,
+      "status": "active",
+      "start_date": "2025-04-02",
+      "end_date": "",
+      "notes": "Contratto €5.680 + €1.000 a consegna. 6 rate incassate. Spese operative: €554 (Tommy, Silvio). Cassa netta: €5.085",
+      "id": 5
+    },
+    {
+      "contract_number": "HC_25",
+      "client_name": "Haze Cup 2025",
+      "description": "Comunicazione digitale completa torneo HAZE CUP 2025",
+      "total_value": 10000,
+      "monthly_rate": 0,
+      "collected": 10000,
+      "status": "completed",
+      "start_date": "2024-12-23",
+      "end_date": "2025-07-31",
+      "notes": "5 rate incassate. Spese: €5.054 (obiettivo €2.200, Mac €1.049, pagamenti team). Cassa netta: €4.946. Team: Simo 41 presenze, Marvin 28, Leo 18",
+      "id": 6
+    }
+  ],
+  "subscriptions": [
+    {
+      "name": "ChatGPT Pro",
+      "cost": 229,
+      "due_day": "5",
+      "category": "AI",
+      "id": 1
+    },
+    {
+      "name": "Higgsfield",
+      "cost": 78.57,
+      "due_day": "15",
+      "category": "AI",
+      "id": 2
+    },
+    {
+      "name": "Adobe Pro",
+      "cost": 40.99,
+      "due_day": "8",
+      "category": "Design",
+      "id": 3
+    },
+    {
+      "name": "Google Workspace",
+      "cost": 36.66,
+      "due_day": "9",
+      "category": "Produttività",
+      "id": 4
+    },
+    {
+      "name": "Canva",
+      "cost": 27,
+      "due_day": "8",
+      "category": "Design",
+      "id": 5
+    },
+    {
+      "name": "Pancdora Pro",
+      "cost": 26,
+      "due_day": "19",
+      "category": "AI",
+      "id": 6
+    },
+    {
+      "name": "Iliad CREA LAB",
+      "cost": 7.99,
+      "due_day": "",
+      "category": "Connettività",
+      "id": 7
+    }
+  ],
+  "lab_orders": [
+    {
+      "client_name": "Delfino Bianco",
+      "cost": 649.92,
+      "sold": 1138.02,
+      "status": "completed",
+      "notes": "Netto: €388,10",
+      "id": 1
+    },
+    {
+      "client_name": "Barberis",
+      "cost": 685.2,
+      "sold": 1113.86,
+      "status": "completed",
+      "notes": "Netto: €378,66",
+      "id": 2
+    },
+    {
+      "client_name": "Rinnova Lab",
+      "cost": 376.28,
+      "sold": 619.76,
+      "status": "completed",
+      "notes": "Netto: €243,48",
+      "id": 3
+    },
+    {
+      "client_name": "Amici Fedeli",
+      "cost": 110.5,
+      "sold": 280,
+      "status": "in_progress",
+      "notes": "Profitto: €129,50",
+      "id": 4
+    },
+    {
+      "client_name": "Dani Raba",
+      "cost": 38.14,
+      "sold": 60,
+      "status": "in_progress",
+      "notes": "Profitto: €21,86",
+      "id": 5
+    },
+    {
+      "client_name": "Marcella",
+      "cost": 117.51,
+      "sold": 148.84,
+      "status": "in_progress",
+      "notes": "Profitto: €31,33",
+      "id": 6
+    },
+    {
+      "client_name": "Alla Bocca dell'Asino",
+      "cost": 152.85,
+      "sold": 256.2,
+      "status": "in_progress",
+      "notes": "Profitto: €103,35",
+      "id": 7
+    },
+    {
+      "client_name": "Norby",
+      "cost": 40,
+      "sold": 65,
+      "status": "in_progress",
+      "notes": "Profitto: €25,00",
+      "id": 8
+    },
+    {
+      "client_name": "Zengena",
+      "cost": 421.11,
+      "sold": 425,
+      "status": "in_progress",
+      "notes": "Supplementi e stampe inclusi. Tot da pagare: €1.230,50",
+      "id": 9
+    },
+    {
+      "client_name": "Giacche Alta Visibilità",
+      "cost": 1409.76,
+      "sold": 625.4,
+      "status": "pending",
+      "notes": "Saldo al ritiro: €610,70",
+      "id": 10
+    }
+  ]
 }

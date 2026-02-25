@@ -203,6 +203,11 @@ tr:hover td{background:rgba(255,255,255,.02)}
     <button class="nav-b" data-s="calendar"><span class="ic">📅</span>Calendario</button>
   </div>
   <div class="nav-g">
+    <div class="nav-l">Business</div>
+    <button class="nav-b" data-s="contracts"><span class="ic">📄</span>Contratti<span class="bd" id="bContracts">0</span></button>
+    <button class="nav-b" data-s="subscriptions"><span class="ic">🔁</span>Abbonamenti</button>
+  </div>
+  <div class="nav-g">
     <div class="nav-l">Intelligenza</div>
     <button class="nav-b" data-s="automations"><span class="ic">⚡</span>Automazioni</button>
     <button class="nav-b" data-s="ai"><span class="ic">🧠</span>AI Hub</button>
@@ -210,6 +215,7 @@ tr:hover td{background:rgba(255,255,255,.02)}
   <div class="nav-g">
     <div class="nav-l">CREA LAB</div>
     <button class="nav-b" data-s="lab"><span class="ic">🏭</span>CREA LAB<span class="bd" id="bWoo">0</span></button>
+    <button class="nav-b" data-s="laborders"><span class="ic">📦</span>Ordini Stampa<span class="bd" id="bLabOrders">0</span></button>
   </div>
   <div class="nav-g">
     <div class="nav-l">Gestione</div>
@@ -262,6 +268,9 @@ socket.on('init', (data) => {
   if (!DB.calendar_posts) DB.calendar_posts = [];
   if (!DB.woo_orders) DB.woo_orders = [];
   if (!DB.woo_products) DB.woo_products = [];
+  if (!DB.contracts) DB.contracts = [];
+  if (!DB.subscriptions) DB.subscriptions = [];
+  if (!DB.lab_orders) DB.lab_orders = [];
   render();
 });
 
@@ -335,9 +344,12 @@ document.querySelectorAll('.nav-b[data-s]').forEach(b => {
       team:'Team & Dipendenti',
       projects:'Progetti & Avanzamento',
       calendar:'Calendario Editoriale',
+      contracts:'Contratti & Rate',
+      subscriptions:'Abbonamenti Mensili',
       automations:'Automazioni & Software',
       ai:'AI Intelligence Hub',
       lab:'CREA LAB',
+      laborders:'Ordini Stampa CREA LAB',
       finance:'Finanze & Fatturazione',
       settings:'Impostazioni'
     };
@@ -354,7 +366,7 @@ function switchTab(btn, id) {
 }
 
 function mainAction() {
-  const m = {clients:'client',team:'member',projects:'project',automations:'automation',finance:'movement',calendar:'calpost'};
+  const m = {clients:'client',team:'member',projects:'project',automations:'automation',finance:'movement',calendar:'calpost',contracts:'contract',subscriptions:'subscription',laborders:'laborder'};
   if (m[section]) openModal(m[section]);
 }
 
@@ -467,9 +479,12 @@ function render() {
     case 'team': c.innerHTML = rTeam(); break;
     case 'projects': c.innerHTML = rProjects(); break;
     case 'calendar': c.innerHTML = rCalendar(); break;
+    case 'contracts': c.innerHTML = rContracts(); break;
+    case 'subscriptions': c.innerHTML = rSubscriptions(); break;
     case 'automations': c.innerHTML = rAutomations(); break;
     case 'ai': c.innerHTML = rAi(); loadAiInsights(); break;
     case 'lab': c.innerHTML = rLab(); break;
+    case 'laborders': c.innerHTML = rLabOrders(); break;
     case 'finance': c.innerHTML = rFinance(); break;
     case 'settings': c.innerHTML = rSettings(); break;
   }
@@ -481,6 +496,8 @@ function updateBadges() {
   document.getElementById('bTeam').textContent = DB.team.length;
   document.getElementById('bProjects').textContent = DB.projects.filter(p=>p.status!=='completed').length;
   document.getElementById('bWoo').textContent = (DB.woo_orders || []).length;
+  document.getElementById('bContracts').textContent = (DB.contracts || []).filter(c=>c.status==='active').length;
+  document.getElementById('bLabOrders').textContent = (DB.lab_orders || []).filter(o=>o.status!=='completed').length;
 }
 
 function euro(n) { return '€' + Number(n).toLocaleString('it-IT'); }
@@ -830,6 +847,122 @@ function rFinance() {
     </div>`;
 }
 
+// ── CONTRACTS ──
+function rContracts() {
+  const contracts = DB.contracts || [];
+  const active = contracts.filter(c=>c.status==='active');
+  const totalValue = contracts.reduce((s,c)=>s+(c.total_value||0),0);
+  const totalCollected = contracts.reduce((s,c)=>s+(c.collected||0),0);
+  const totalRemaining = totalValue - totalCollected;
+  const monthlyRecurring = contracts.filter(c=>c.status==='active').reduce((s,c)=>s+(c.monthly_rate||0),0);
+
+  return `
+    <div class="kpi-g">
+      <div class="kpi"><div class="lb">Contratti Attivi</div><div class="vl" style="color:var(--gn)">${active.length}</div><div class="ch">su ${contracts.length} totali</div></div>
+      <div class="kpi"><div class="lb">Valore Totale</div><div class="vl" style="color:var(--ac)">${euro(totalValue)}</div></div>
+      <div class="kpi"><div class="lb">Incassato</div><div class="vl" style="color:var(--gn)">${euro(totalCollected)}</div></div>
+      <div class="kpi"><div class="lb">Da Incassare</div><div class="vl" style="color:var(--or)">${euro(totalRemaining)}</div></div>
+    </div>
+    <div class="tw"><div class="th"><h3>Contratti CREA STUDIO</h3><button class="btn btn-p btn-sm" onclick="openModal('contract')">+ Nuovo Contratto</button></div>
+      <table><thead><tr><th>N.</th><th>Cliente</th><th>Valore</th><th>Rata Mensile</th><th>Incassato</th><th>Residuo</th><th>Scadenza</th><th>Stato</th><th>Azioni</th></tr></thead>
+      <tbody>${contracts.length?contracts.map(c=>{
+        const remaining = (c.total_value||0) - (c.collected||0);
+        const pct = c.total_value ? Math.round(c.collected/c.total_value*100) : 0;
+        return `<tr>
+          <td><strong>${c.contract_number||'-'}</strong></td>
+          <td><strong>${c.client_name||'-'}</strong><br><span style="font-size:11px;color:var(--dm)">${c.description||''}</span></td>
+          <td>${euro(c.total_value||0)}</td>
+          <td>${c.monthly_rate?euro(c.monthly_rate):'-'}</td>
+          <td style="color:var(--gn)">${euro(c.collected||0)}<br><span style="font-size:10px">${pct}%</span></td>
+          <td style="color:${remaining>0?'var(--or)':'var(--gn)'}">${euro(remaining)}</td>
+          <td>${c.end_date||'-'}</td>
+          <td>${statusBadge(c.status||'active')}</td>
+          <td><button class="btn-i" onclick="openModal('contract',${c.id})">✏️</button> <button class="btn-i" onclick="deleteItem('contracts',${c.id})">🗑️</button></td>
+        </tr>`;
+      }).join(''):'<tr><td colspan="9" style="text-align:center;color:var(--dm);padding:30px">Nessun contratto</td></tr>'}</tbody></table>
+    </div>
+    <div class="ct-w"><h3>Avanzamento Incassi</h3>
+      <div style="padding:10px 0">${contracts.map(c=>{
+        const pct = c.total_value ? Math.round((c.collected||0)/c.total_value*100) : 0;
+        return `<div style="margin-bottom:12px"><div style="display:flex;justify-content:space-between;font-size:13px;margin-bottom:4px"><span>${c.client_name||'-'}</span><span style="font-weight:700">${pct}% (${euro(c.collected||0)}/${euro(c.total_value||0)})</span></div>${progressBar(pct,pct>=100?'var(--gn)':pct>=50?'var(--ac)':'var(--or)')}</div>`;
+      }).join('')}</div>
+    </div>`;
+}
+
+// ── SUBSCRIPTIONS ──
+function rSubscriptions() {
+  const subs = DB.subscriptions || [];
+  const totalMonthly = subs.reduce((s,sub)=>s+(sub.cost||0),0);
+  const totalYearly = totalMonthly * 12;
+
+  return `
+    <div class="kpi-g">
+      <div class="kpi"><div class="lb">Abbonamenti</div><div class="vl">${subs.length}</div></div>
+      <div class="kpi"><div class="lb">Costo Mensile</div><div class="vl" style="color:var(--rd)">${euro(totalMonthly)}</div></div>
+      <div class="kpi"><div class="lb">Costo Annuale</div><div class="vl" style="color:var(--or)">${euro(totalYearly)}</div></div>
+      <div class="kpi"><div class="lb">Prossima Scadenza</div><div class="vl" style="font-size:16px">${getNextSubDue(subs)}</div></div>
+    </div>
+    <div class="tw"><div class="th"><h3>Abbonamenti & Tool</h3><button class="btn btn-p btn-sm" onclick="openModal('subscription')">+ Aggiungi</button></div>
+      <table><thead><tr><th>Servizio</th><th>Costo Mensile</th><th>Scadenza</th><th>Categoria</th><th>Azioni</th></tr></thead>
+      <tbody>${subs.length?subs.sort((a,b)=>(b.cost||0)-(a.cost||0)).map(s=>`<tr>
+        <td><strong>${s.name||'-'}</strong></td>
+        <td style="font-weight:700;color:var(--rd)">${euro(s.cost||0)}</td>
+        <td>${s.due_day?s.due_day+' del mese':'-'}</td>
+        <td><span class="sb-b st-active">${s.category||'Tool'}</span></td>
+        <td><button class="btn-i" onclick="openModal('subscription',${s.id})">✏️</button> <button class="btn-i" onclick="deleteItem('subscriptions',${s.id})">🗑️</button></td>
+      </tr>`).join(''):'<tr><td colspan="5" style="text-align:center;color:var(--dm);padding:30px">Nessun abbonamento</td></tr>'}</tbody></table>
+    </div>
+    <div class="ct-w"><h3>Distribuzione Costi</h3>
+      <div class="mc-c">${subs.sort((a,b)=>(b.cost||0)-(a.cost||0)).map(s=>{
+        const pct = totalMonthly ? (s.cost/totalMonthly*100) : 0;
+        return `<div class="mc-b" style="height:${Math.max(pct,5)}%;background:var(--pk)" title="${s.name}: ${euro(s.cost)}"><div class="mc-l">${(s.name||'').slice(0,8)}</div></div>`;
+      }).join('')}</div>
+    </div>`;
+}
+
+function getNextSubDue(subs) {
+  if (!subs.length) return '-';
+  const today = new Date().getDate();
+  const upcoming = subs.filter(s=>s.due_day).sort((a,b)=>{
+    const da = parseInt(a.due_day) >= today ? parseInt(a.due_day) - today : parseInt(a.due_day) + 30 - today;
+    const db_ = parseInt(b.due_day) >= today ? parseInt(b.due_day) - today : parseInt(b.due_day) + 30 - today;
+    return da - db_;
+  });
+  return upcoming[0] ? `${upcoming[0].name} (${upcoming[0].due_day})` : '-';
+}
+
+// ── LAB ORDERS (Stampa) ──
+function rLabOrders() {
+  const orders = DB.lab_orders || [];
+  const totalCost = orders.reduce((s,o)=>s+(o.cost||0),0);
+  const totalSold = orders.reduce((s,o)=>s+(o.sold||0),0);
+  const totalProfit = totalSold - totalCost;
+  const pending = orders.filter(o=>o.status!=='completed');
+
+  return `
+    <div class="kpi-g">
+      <div class="kpi"><div class="lb">Ordini</div><div class="vl">${orders.length}</div><div class="ch">${pending.length} in corso</div></div>
+      <div class="kpi"><div class="lb">Costo Totale</div><div class="vl" style="color:var(--or)">${euro(totalCost)}</div></div>
+      <div class="kpi"><div class="lb">Venduto</div><div class="vl" style="color:var(--bl)">${euro(totalSold)}</div></div>
+      <div class="kpi"><div class="lb">Profitto Netto</div><div class="vl" style="color:${totalProfit>0?'var(--gn)':'var(--rd)'}">${euro(totalProfit)}</div></div>
+    </div>
+    <div class="tw"><div class="th"><h3>Ordini Stampa CREA LAB</h3><button class="btn btn-p btn-sm" onclick="openModal('laborder')">+ Nuovo Ordine</button></div>
+      <table><thead><tr><th>Cliente</th><th>Costo</th><th>Venduto</th><th>Profitto</th><th>Stato</th><th>Note</th><th>Azioni</th></tr></thead>
+      <tbody>${orders.length?orders.map(o=>{
+        const profit = (o.sold||0)-(o.cost||0);
+        return `<tr>
+          <td><strong>${o.client_name||'-'}</strong></td>
+          <td>${euro(o.cost||0)}</td>
+          <td>${euro(o.sold||0)}</td>
+          <td style="font-weight:700;color:${profit>0?'var(--gn)':'var(--rd)'}">${euro(profit)}</td>
+          <td>${statusBadge(o.status||'in_progress')}</td>
+          <td style="font-size:12px;color:var(--dm)">${o.notes||'-'}</td>
+          <td><button class="btn-i" onclick="openModal('laborder',${o.id})">✏️</button> <button class="btn-i" onclick="deleteItem('lab_orders',${o.id})">🗑️</button></td>
+        </tr>`;
+      }).join(''):'<tr><td colspan="7" style="text-align:center;color:var(--dm);padding:30px">Nessun ordine</td></tr>'}</tbody></table>
+    </div>`;
+}
+
 // ── SETTINGS ──
 function rSettings() {
   const s = DB.settings || {};
@@ -920,6 +1053,37 @@ function openModal(type, id=null, defValue=null) {
       <div class="fg"><label>Tipo</label><select id="f_type"><option value="entrata">Entrata</option><option value="uscita">Uscita</option></select></div></div>
       <div class="fg"><label>Importo (€)</label><input type="number" id="f_amount" value="0"></div>
       <div class="fa"><button class="btn btn-s" onclick="closeModal()">Annulla</button><button class="btn btn-p" onclick="saveModal('finance')">Salva</button></div>`;
+  } else if (type === 'contract') {
+    const c = id ? (DB.contracts||[]).find(x=>x.id===id) : {};
+    h = `<h3>${id?'✏️ Modifica':'➕ Nuovo'} Contratto</h3>
+      <div class="fg"><label>Numero Contratto</label><input id="f_contract_number" value="${c.contract_number||''}"></div>
+      <div class="fg"><label>Cliente *</label><input id="f_client_name" value="${c.client_name||''}"></div>
+      <div class="fg"><label>Descrizione</label><input id="f_description" value="${c.description||''}"></div>
+      <div class="fr"><div class="fg"><label>Valore Totale (€)</label><input type="number" id="f_total_value" value="${c.total_value||0}"></div>
+      <div class="fg"><label>Rata Mensile (€)</label><input type="number" id="f_monthly_rate" value="${c.monthly_rate||0}"></div></div>
+      <div class="fr"><div class="fg"><label>Incassato (€)</label><input type="number" id="f_collected" value="${c.collected||0}"></div>
+      <div class="fg"><label>Stato</label><select id="f_status"><option value="active" ${c.status==='active'?'selected':''}>Attivo</option><option value="completed" ${c.status==='completed'?'selected':''}>Completato</option><option value="pending" ${c.status==='pending'?'selected':''}>In attesa</option></select></div></div>
+      <div class="fr"><div class="fg"><label>Data Inizio</label><input type="date" id="f_start_date" value="${c.start_date||''}"></div>
+      <div class="fg"><label>Data Fine</label><input type="date" id="f_end_date" value="${c.end_date||''}"></div></div>
+      <div class="fg"><label>Note (rate, spese, ecc.)</label><textarea id="f_notes">${c.notes||''}</textarea></div>
+      <div class="fa"><button class="btn btn-s" onclick="closeModal()">Annulla</button><button class="btn btn-p" onclick="saveModal('contracts')">Salva</button></div>`;
+  } else if (type === 'subscription') {
+    const s = id ? (DB.subscriptions||[]).find(x=>x.id===id) : {};
+    h = `<h3>${id?'✏️ Modifica':'➕ Nuovo'} Abbonamento</h3>
+      <div class="fg"><label>Servizio *</label><input id="f_name" value="${s.name||''}"></div>
+      <div class="fr"><div class="fg"><label>Costo Mensile (€)</label><input type="number" step="0.01" id="f_cost" value="${s.cost||0}"></div>
+      <div class="fg"><label>Giorno Scadenza</label><input id="f_due_day" value="${s.due_day||''}" placeholder="es. 5, 15 del mese"></div></div>
+      <div class="fg"><label>Categoria</label><select id="f_category"><option value="AI" ${s.category==='AI'?'selected':''}>AI</option><option value="Design" ${s.category==='Design'?'selected':''}>Design</option><option value="Produttività" ${s.category==='Produttività'?'selected':''}>Produttività</option><option value="Connettività" ${s.category==='Connettività'?'selected':''}>Connettività</option><option value="Altro" ${s.category==='Altro'?'selected':''}>Altro</option></select></div>
+      <div class="fa"><button class="btn btn-s" onclick="closeModal()">Annulla</button><button class="btn btn-p" onclick="saveModal('subscriptions')">Salva</button></div>`;
+  } else if (type === 'laborder') {
+    const o = id ? (DB.lab_orders||[]).find(x=>x.id===id) : {};
+    h = `<h3>${id?'✏️ Modifica':'➕ Nuovo'} Ordine Stampa</h3>
+      <div class="fg"><label>Cliente *</label><input id="f_client_name" value="${o.client_name||''}"></div>
+      <div class="fr"><div class="fg"><label>Costo (€)</label><input type="number" step="0.01" id="f_cost" value="${o.cost||0}"></div>
+      <div class="fg"><label>Venduto (€)</label><input type="number" step="0.01" id="f_sold" value="${o.sold||0}"></div></div>
+      <div class="fg"><label>Stato</label><select id="f_status"><option value="in_progress" ${o.status==='in_progress'?'selected':''}>In Corso</option><option value="completed" ${o.status==='completed'?'selected':''}>Completato</option><option value="pending" ${o.status==='pending'?'selected':''}>In attesa</option></select></div>
+      <div class="fg"><label>Note</label><textarea id="f_notes">${o.notes||''}</textarea></div>
+      <div class="fa"><button class="btn btn-s" onclick="closeModal()">Annulla</button><button class="btn btn-p" onclick="saveModal('lab_orders')">Salva</button></div>`;
   } else if (type === 'calpost') {
     const p = id ? DB.calendar_posts.find(x=>x.id===id) : {date:defValue||formatDate(new Date())};
     const cOpts = (DB.clients||[]).map(c=>`<option value="${c.name}" ${p.client===c.name?'selected':''}>${c.name}</option>`).join('');
@@ -957,6 +1121,15 @@ async function saveModal(coll) {
     const type = gv('f_type');
     data = { date:gv('f_date'),description:gv('f_desc'),brand:gv('f_brand'),type,amount:parseInt(gv('f_amount'))||0 };
     if (!data.description) { toast('Descrizione obbligatoria','er'); return; }
+  } else if (coll === 'contracts') {
+    data = { contract_number:gv('f_contract_number'),client_name:gv('f_client_name'),description:gv('f_description'),total_value:parseFloat(gv('f_total_value'))||0,monthly_rate:parseFloat(gv('f_monthly_rate'))||0,collected:parseFloat(gv('f_collected'))||0,status:gv('f_status'),start_date:gv('f_start_date'),end_date:gv('f_end_date'),notes:gv('f_notes') };
+    if (!data.client_name) { toast('Cliente obbligatorio','er'); return; }
+  } else if (coll === 'subscriptions') {
+    data = { name:gv('f_name'),cost:parseFloat(gv('f_cost'))||0,due_day:gv('f_due_day'),category:gv('f_category') };
+    if (!data.name) { toast('Nome obbligatorio','er'); return; }
+  } else if (coll === 'lab_orders') {
+    data = { client_name:gv('f_client_name'),cost:parseFloat(gv('f_cost'))||0,sold:parseFloat(gv('f_sold'))||0,status:gv('f_status'),notes:gv('f_notes') };
+    if (!data.client_name) { toast('Cliente obbligatorio','er'); return; }
   } else if (coll === 'calendar_posts') {
     data = { title:gv('f_title'),client:gv('f_client'),platform:gv('f_platform'),date:gv('f_date'),time:gv('f_time'),status:gv('f_status'),notes:gv('f_notes') };
     if (!data.title) { toast('Titolo obbligatorio','er'); return; }
