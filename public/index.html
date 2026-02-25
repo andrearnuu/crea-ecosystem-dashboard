@@ -1,0 +1,766 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>CREA Ecosystem Dashboard</title>
+<script src="/socket.io/socket.io.js"></script>
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap');
+*{margin:0;padding:0;box-sizing:border-box}
+:root{--bg:#0a0a0f;--s1:#111118;--s2:#191924;--s3:#22222f;--bd:rgba(255,255,255,.07);--tx:#eeeef5;--dm:#7b7b99;--ac:#6c5ce7;--ac2:#a855f7;--gn:#10b981;--bl:#3b82f6;--or:#f59e0b;--rd:#ef4444;--cy:#06b6d4;--pk:#ec4899;--sb:250px}
+body{font-family:'Inter',system-ui,sans-serif;background:var(--bg);color:var(--tx);height:100vh;overflow:hidden;display:flex}
+button{font-family:inherit;cursor:pointer;border:none}
+input,select,textarea{font-family:inherit;background:var(--s2);color:var(--tx);border:1px solid var(--bd);border-radius:8px;padding:8px 12px;font-size:13px;outline:none;transition:border .2s}
+input:focus,select:focus,textarea:focus{border-color:var(--ac)}
+textarea{resize:vertical;min-height:60px}
+::-webkit-scrollbar{width:6px}::-webkit-scrollbar-track{background:transparent}::-webkit-scrollbar-thumb{background:rgba(255,255,255,.1);border-radius:3px}
+
+/* LIVE INDICATOR */
+.live-dot{width:8px;height:8px;border-radius:50%;background:var(--gn);display:inline-block;animation:pulse 2s infinite;margin-right:6px}
+@keyframes pulse{0%,100%{opacity:1;box-shadow:0 0 0 0 rgba(16,185,129,.4)}50%{opacity:.8;box-shadow:0 0 0 6px rgba(16,185,129,0)}}
+
+/* SIDEBAR */
+.sidebar{width:var(--sb);background:var(--s1);border-right:1px solid var(--bd);display:flex;flex-direction:column;flex-shrink:0;height:100vh;overflow-y:auto}
+.sb-logo{padding:20px;border-bottom:1px solid var(--bd)}
+.sb-logo h1{font-size:22px;font-weight:900;background:linear-gradient(135deg,#fff,var(--ac2));-webkit-background-clip:text;-webkit-text-fill-color:transparent}
+.sb-logo small{font-size:10px;color:var(--dm);text-transform:uppercase;letter-spacing:2px;display:flex;align-items:center;margin-top:4px}
+.nav-g{padding:8px 10px}
+.nav-l{font-size:10px;text-transform:uppercase;letter-spacing:2px;color:var(--dm);padding:10px 10px 6px;opacity:.6}
+.nav-b{display:flex;align-items:center;gap:10px;width:100%;padding:9px 12px;border-radius:10px;background:none;color:var(--dm);font-size:13px;font-weight:500;transition:all .15s;text-align:left}
+.nav-b:hover{background:rgba(255,255,255,.04);color:var(--tx)}
+.nav-b.on{background:rgba(108,92,231,.15);color:var(--ac)}
+.nav-b .ic{width:20px;text-align:center;font-size:15px}
+.nav-b .bd{margin-left:auto;background:var(--ac);color:#fff;font-size:10px;padding:2px 7px;border-radius:6px;font-weight:700;min-width:20px;text-align:center}
+.sb-ft{margin-top:auto;padding:14px 20px;border-top:1px solid var(--bd);font-size:11px;color:var(--dm)}
+
+/* MAIN */
+.main{flex:1;display:flex;flex-direction:column;overflow:hidden}
+.topbar{display:flex;align-items:center;justify-content:space-between;padding:14px 28px;border-bottom:1px solid var(--bd);background:var(--s1);flex-shrink:0}
+.topbar h2{font-size:20px;font-weight:700}
+.top-act{display:flex;gap:8px;align-items:center}
+.content{flex:1;overflow-y:auto;padding:24px 28px;scroll-behavior:smooth}
+
+/* BTNS */
+.btn{padding:8px 16px;border-radius:8px;font-size:12px;font-weight:600;transition:all .2s;display:inline-flex;align-items:center;gap:6px}
+.btn-p{background:var(--ac);color:#fff}.btn-p:hover{background:#5b4bd6;transform:translateY(-1px)}
+.btn-s{background:var(--s2);color:var(--dm);border:1px solid var(--bd)}.btn-s:hover{border-color:rgba(255,255,255,.15);color:var(--tx)}
+.btn-d{background:rgba(239,68,68,.15);color:var(--rd)}.btn-d:hover{background:rgba(239,68,68,.25)}
+.btn-sm{padding:5px 10px;font-size:11px}
+.btn-i{width:32px;height:32px;border-radius:8px;display:flex;align-items:center;justify-content:center;background:var(--s2);color:var(--dm);border:1px solid var(--bd);font-size:14px;padding:0}
+.btn-i:hover{border-color:rgba(255,255,255,.15);color:var(--tx)}
+
+/* KPI */
+.kpi-g{display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:14px;margin-bottom:24px}
+.kpi{background:var(--s1);border:1px solid var(--bd);border-radius:12px;padding:18px;transition:all .3s}
+.kpi .lb{font-size:11px;color:var(--dm);text-transform:uppercase;letter-spacing:1px}
+.kpi .vl{font-size:28px;font-weight:800;margin:4px 0 2px}
+.kpi .ch{font-size:12px;font-weight:600}
+
+/* TABLE */
+.tw{background:var(--s1);border:1px solid var(--bd);border-radius:12px;overflow:hidden;margin-bottom:20px}
+.th{display:flex;justify-content:space-between;align-items:center;padding:14px 18px;border-bottom:1px solid var(--bd)}
+.th h3{font-size:15px;font-weight:700}
+table{width:100%;border-collapse:collapse}
+th{text-align:left;padding:10px 18px;font-size:11px;text-transform:uppercase;letter-spacing:1px;color:var(--dm);border-bottom:1px solid var(--bd);font-weight:600}
+td{padding:12px 18px;font-size:13px;border-bottom:1px solid rgba(255,255,255,.03)}
+tr:hover td{background:rgba(255,255,255,.02)}
+.sb-b{padding:3px 10px;border-radius:6px;font-size:11px;font-weight:600;display:inline-block}
+.st-active{background:rgba(16,185,129,.12);color:var(--gn)}
+.st-pending{background:rgba(245,158,11,.12);color:var(--or)}
+.st-completed{background:rgba(59,130,246,.12);color:var(--bl)}
+.st-paused{background:rgba(239,68,68,.12);color:var(--rd)}
+.bt{font-size:10px;font-weight:700;padding:2px 8px;border-radius:5px;letter-spacing:.5px}
+.bt-l{background:rgba(108,92,231,.15);color:var(--ac)}
+.bt-s{background:rgba(236,72,153,.15);color:var(--pk)}
+
+/* MODAL */
+.mo{position:fixed;inset:0;background:rgba(0,0,0,.6);backdrop-filter:blur(4px);z-index:1000;display:none;align-items:center;justify-content:center}
+.mo.show{display:flex}
+.mc{background:var(--s1);border:1px solid var(--bd);border-radius:16px;width:90%;max-width:540px;max-height:85vh;overflow-y:auto;padding:28px}
+.mc h3{font-size:18px;font-weight:700;margin-bottom:20px}
+.fg{margin-bottom:14px}
+.fg label{display:block;font-size:12px;color:var(--dm);margin-bottom:5px;font-weight:500}
+.fg input,.fg select,.fg textarea{width:100%}
+.fr{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+.fa{display:flex;justify-content:flex-end;gap:8px;margin-top:20px;padding-top:16px;border-top:1px solid var(--bd)}
+
+/* KANBAN */
+.kb{display:grid;grid-template-columns:repeat(4,1fr);gap:14px;margin-bottom:20px}
+.kc{background:var(--s1);border:1px solid var(--bd);border-radius:12px;padding:14px;min-height:300px}
+.kc-h{font-size:13px;font-weight:700;margin-bottom:12px;display:flex;align-items:center;gap:8px}
+.kc-h .ct{background:var(--s2);padding:2px 8px;border-radius:6px;font-size:11px;color:var(--dm)}
+.kk{background:var(--s2);border:1px solid var(--bd);border-radius:8px;padding:12px;margin-bottom:8px;cursor:pointer;transition:all .15s}
+.kk:hover{border-color:rgba(255,255,255,.12);transform:translateY(-1px)}
+.kk h4{font-size:13px;font-weight:600;margin-bottom:4px}
+.kk p{font-size:11px;color:var(--dm)}
+.kk-m{display:flex;justify-content:space-between;align-items:center;margin-top:8px}
+
+/* PROGRESS */
+.pb{height:6px;background:var(--s2);border-radius:3px;overflow:hidden;margin:6px 0}
+.pf{height:100%;border-radius:3px;transition:width .5s cubic-bezier(.16,1,.3,1)}
+
+/* AI */
+.ai-c{background:linear-gradient(135deg,rgba(108,92,231,.08),rgba(168,85,247,.08));border:1px solid rgba(168,85,247,.2);border-radius:12px;padding:20px;margin-bottom:12px;transition:all .3s}
+.ai-c:hover{border-color:rgba(168,85,247,.4)}
+.ai-c h4{font-size:14px;font-weight:700;color:var(--ac2);margin-bottom:6px;display:flex;align-items:center;gap:8px}
+.ai-c p{font-size:13px;color:var(--dm);line-height:1.6}
+.ai-c .pr{font-size:11px;font-weight:700;padding:2px 8px;border-radius:4px;margin-left:auto}
+.pr-high{background:rgba(239,68,68,.15);color:var(--rd)}
+.pr-medium{background:rgba(245,158,11,.15);color:var(--or)}
+.pr-low{background:rgba(16,185,129,.15);color:var(--gn)}
+
+.chat-w{background:var(--s1);border:1px solid var(--bd);border-radius:12px;padding:20px;margin-top:20px}
+.chat-m{max-height:300px;overflow-y:auto;margin-bottom:14px}
+.msg{padding:10px 14px;border-radius:10px;margin-bottom:8px;font-size:13px;line-height:1.5;max-width:80%}
+.msg.u{background:var(--ac);color:#fff;margin-left:auto}
+.msg.b{background:var(--s2);color:var(--tx)}
+.chat-i{display:flex;gap:8px}
+.chat-i input{flex:1}
+
+/* AUTOMATION */
+.au{background:var(--s1);border:1px solid var(--bd);border-radius:12px;padding:18px;margin-bottom:10px;display:flex;align-items:center;gap:16px;transition:all .3s}
+.au:hover{border-color:rgba(255,255,255,.1)}
+.au-s{width:10px;height:10px;border-radius:50%;flex-shrink:0}
+.au-s.on{background:var(--gn);box-shadow:0 0 8px rgba(16,185,129,.4)}
+.au-s.off{background:var(--rd)}
+.au-i{flex:1}.au-i h4{font-size:14px;font-weight:600}.au-i p{font-size:12px;color:var(--dm)}
+.tg{width:44px;height:24px;border-radius:12px;background:var(--s3);position:relative;cursor:pointer;transition:background .2s;border:none}
+.tg.on{background:var(--gn)}
+.tg::after{content:'';position:absolute;width:18px;height:18px;border-radius:50%;background:#fff;top:3px;left:3px;transition:transform .2s}
+.tg.on::after{transform:translateX(20px)}
+
+/* CARDS */
+.cg{display:grid;grid-template-columns:repeat(auto-fill,minmax(320px,1fr));gap:16px;margin-bottom:20px}
+.cd{background:var(--s1);border:1px solid var(--bd);border-radius:12px;padding:20px;transition:all .2s}
+.cd:hover{border-color:rgba(255,255,255,.12);transform:translateY(-2px)}
+
+/* CHART */
+.ct-w{background:var(--s1);border:1px solid var(--bd);border-radius:12px;padding:20px;margin-bottom:20px}
+.ct-w h3{font-size:15px;font-weight:700;margin-bottom:16px}
+.mc-c{display:flex;align-items:flex-end;gap:6px;height:120px;padding-bottom:24px}
+.mc-b{flex:1;border-radius:4px 4px 0 0;transition:height .5s cubic-bezier(.16,1,.3,1);position:relative;min-width:16px}
+.mc-b .mc-l{position:absolute;bottom:-20px;left:50%;transform:translateX(-50%);font-size:9px;color:var(--dm);white-space:nowrap}
+
+/* TABS */
+.tabs{display:flex;gap:4px;margin-bottom:20px}
+.tab{padding:8px 16px;border-radius:8px;font-size:13px;font-weight:500;background:none;color:var(--dm);transition:all .2s}
+.tab:hover{background:rgba(255,255,255,.04);color:var(--tx)}
+.tab.on{background:rgba(108,92,231,.15);color:var(--ac)}
+
+.sec{display:none}.sec.on{display:block}
+
+/* TOAST */
+.toast-c{position:fixed;top:20px;right:20px;z-index:2000;display:flex;flex-direction:column;gap:8px}
+.toast{padding:12px 20px;border-radius:10px;font-size:13px;font-weight:500;animation:si .3s ease;box-shadow:0 10px 30px rgba(0,0,0,.3)}
+.t-ok{background:var(--gn);color:#fff}
+.t-er{background:var(--rd);color:#fff}
+.t-in{background:var(--ac);color:#fff}
+@keyframes si{from{opacity:0;transform:translateX(40px)}to{opacity:1;transform:translateX(0)}}
+@keyframes flash{0%{box-shadow:0 0 0 0 rgba(108,92,231,.4)}100%{box-shadow:0 0 0 0 transparent}}
+.flash{animation:flash .6s ease}
+</style>
+</head>
+<body>
+
+<nav class="sidebar">
+  <div class="sb-logo">
+    <h1>CREA</h1>
+    <small><span class="live-dot"></span>Ecosystem Dashboard — LIVE</small>
+  </div>
+  <div class="nav-g">
+    <div class="nav-l">Principale</div>
+    <button class="nav-b on" data-s="overview"><span class="ic">📊</span>Overview</button>
+    <button class="nav-b" data-s="clients"><span class="ic">👥</span>Clienti<span class="bd" id="bClients">0</span></button>
+    <button class="nav-b" data-s="team"><span class="ic">🧑‍💼</span>Team<span class="bd" id="bTeam">0</span></button>
+    <button class="nav-b" data-s="projects"><span class="ic">🚀</span>Progetti<span class="bd" id="bProjects">0</span></button>
+  </div>
+  <div class="nav-g">
+    <div class="nav-l">Intelligenza</div>
+    <button class="nav-b" data-s="automations"><span class="ic">⚡</span>Automazioni</button>
+    <button class="nav-b" data-s="ai"><span class="ic">🧠</span>AI Hub</button>
+  </div>
+  <div class="nav-g">
+    <div class="nav-l">Gestione</div>
+    <button class="nav-b" data-s="finance"><span class="ic">💰</span>Finanze</button>
+    <button class="nav-b" data-s="settings"><span class="ic">⚙️</span>Impostazioni</button>
+  </div>
+  <div class="sb-ft">
+    <div style="display:flex;align-items:center;gap:6px"><span class="live-dot"></span>Real-time attivo</div>
+    <div style="margin-top:4px;font-size:10px">Connessi: <span id="connCount">1</span> · <span id="lastUp">-</span></div>
+  </div>
+</nav>
+
+<div class="main">
+  <div class="topbar">
+    <h2 id="pageTitle">Dashboard Overview</h2>
+    <div class="top-act">
+      <input type="text" placeholder="Cerca..." id="search" style="width:200px" oninput="doSearch(this.value)">
+      <button class="btn btn-s" onclick="exportJSON()">📥 Esporta</button>
+      <button class="btn btn-p" id="mainBtn" onclick="mainAction()">+ Nuovo</button>
+    </div>
+  </div>
+  <div class="content" id="content"></div>
+</div>
+
+<div class="mo" id="modal" onclick="if(event.target===this)closeModal()"><div class="mc" id="modalBody"></div></div>
+<div class="toast-c" id="toasts"></div>
+
+<script>
+// ═══════════════════════════════════════
+// STATE
+// ═══════════════════════════════════════
+let DB = {};
+let section = 'overview';
+let editId = null;
+const API = '';
+
+// ═══════════════════════════════════════
+// SOCKET.IO — REAL-TIME
+// ═══════════════════════════════════════
+const socket = io();
+
+socket.on('connect', () => {
+  console.log('🟢 Connesso al server');
+  toast('Connesso al server in real-time', 'ok');
+});
+
+socket.on('init', (data) => {
+  DB = data;
+  render();
+});
+
+socket.on('data_update', (payload) => {
+  const { collection, action, item, id, items } = payload;
+  if (action === 'create') {
+    DB[collection].push(item);
+  } else if (action === 'update') {
+    const idx = DB[collection].findIndex(x => x.id === item.id);
+    if (idx !== -1) DB[collection][idx] = item;
+  } else if (action === 'delete') {
+    DB[collection] = DB[collection].filter(x => x.id !== id);
+  } else if (action === 'bulk') {
+    DB[collection] = items;
+  }
+  render();
+  document.getElementById('lastUp').textContent = new Date().toLocaleTimeString('it-IT');
+  // Flash effect
+  document.querySelector('.content').classList.add('flash');
+  setTimeout(() => document.querySelector('.content').classList.remove('flash'), 600);
+});
+
+socket.on('activity_update', (activity) => {
+  if (!DB.activity) DB.activity = [];
+  DB.activity.unshift(activity);
+  if (section === 'overview') render();
+});
+
+socket.on('settings_update', (settings) => {
+  DB.settings = settings;
+  if (section === 'settings') render();
+});
+
+socket.on('disconnect', () => {
+  toast('Disconnesso dal server', 'er');
+});
+
+// ═══════════════════════════════════════
+// API CALLS
+// ═══════════════════════════════════════
+async function api(method, path, body) {
+  const opts = { method, headers: { 'Content-Type': 'application/json' } };
+  if (body) opts.body = JSON.stringify(body);
+  const res = await fetch(API + path, opts);
+  return res.json();
+}
+
+// ═══════════════════════════════════════
+// NAV
+// ═══════════════════════════════════════
+document.querySelectorAll('.nav-b[data-s]').forEach(b => {
+  b.addEventListener('click', () => {
+    document.querySelectorAll('.nav-b').forEach(x => x.classList.remove('on'));
+    b.classList.add('on');
+    section = b.dataset.s;
+    const t = {overview:'Dashboard Overview',clients:'Gestione Clienti',team:'Team & Dipendenti',projects:'Progetti & Avanzamento',automations:'Automazioni & Software',ai:'AI Intelligence Hub',finance:'Finanze & Fatturazione',settings:'Impostazioni'};
+    document.getElementById('pageTitle').textContent = t[section] || '';
+    render();
+  });
+});
+
+function switchTab(btn, id) {
+  btn.parentElement.querySelectorAll('.tab').forEach(t => t.classList.remove('on'));
+  btn.classList.add('on');
+  document.querySelectorAll('.tc').forEach(c => c.style.display = 'none');
+  document.getElementById(id).style.display = 'block';
+}
+
+function mainAction() {
+  const m = {clients:'client',team:'member',projects:'project',automations:'automation',finance:'movement'};
+  if (m[section]) openModal(m[section]);
+}
+
+// ═══════════════════════════════════════
+// TOAST
+// ═══════════════════════════════════════
+function toast(msg, type='in') {
+  const t = document.createElement('div');
+  t.className = 'toast t-' + type;
+  t.textContent = msg;
+  document.getElementById('toasts').appendChild(t);
+  setTimeout(() => t.remove(), 3000);
+}
+
+// ═══════════════════════════════════════
+// RENDER
+// ═══════════════════════════════════════
+function render() {
+  updateBadges();
+  const c = document.getElementById('content');
+  switch(section) {
+    case 'overview': c.innerHTML = rOverview(); break;
+    case 'clients': c.innerHTML = rClients(); break;
+    case 'team': c.innerHTML = rTeam(); break;
+    case 'projects': c.innerHTML = rProjects(); break;
+    case 'automations': c.innerHTML = rAutomations(); break;
+    case 'ai': c.innerHTML = rAi(); loadAiInsights(); break;
+    case 'finance': c.innerHTML = rFinance(); break;
+    case 'settings': c.innerHTML = rSettings(); break;
+  }
+}
+
+function updateBadges() {
+  if (!DB.clients) return;
+  document.getElementById('bClients').textContent = DB.clients.length;
+  document.getElementById('bTeam').textContent = DB.team.length;
+  document.getElementById('bProjects').textContent = DB.projects.filter(p=>p.status!=='completed').length;
+}
+
+function euro(n) { return '€' + Number(n).toLocaleString('it-IT'); }
+function brandTag(b) { return `<span class="bt ${b==='LAB'?'bt-l':'bt-s'}">${b==='LAB'?'CREA LAB':'CREA STUDIO'}</span>`; }
+function statusBadge(s) {
+  const m = {active:['Attivo','st-active'],pending:['In attesa','st-pending'],completed:['Completato','st-completed'],in_progress:['In Corso','st-active'],review:['Review','st-pending'],backlog:['Backlog','st-paused']};
+  const [l,c] = m[s] || [s,''];
+  return `<span class="sb-b ${c}">${l}</span>`;
+}
+function progressBar(pct, color='var(--ac)') {
+  return `<div class="pb"><div class="pf" style="width:${pct}%;background:${color}"></div></div>`;
+}
+
+// ── OVERVIEW ──
+function rOverview() {
+  const entrate = DB.finance.filter(f=>f.type==='entrata').reduce((s,f)=>s+f.amount,0);
+  const uscite = DB.finance.filter(f=>f.type==='uscita').reduce((s,f)=>s+f.amount,0);
+  const activeP = DB.projects.filter(p=>!['completed','backlog'].includes(p.status)).length;
+  const activeC = DB.clients.filter(c=>c.status==='active').length;
+  const months = ['Gen','Feb','Mar','Apr','Mag','Giu','Lug','Ago','Set','Ott','Nov','Dic'];
+  const mData = months.map((_,i) => DB.finance.filter(f=>f.type==='entrata'&&new Date(f.date).getMonth()===i).reduce((s,f)=>s+f.amount,0));
+  const mx = Math.max(...mData,1);
+  const labP = DB.projects.filter(p=>p.brand==='LAB').length;
+  const stuP = DB.projects.filter(p=>p.brand==='STUDIO').length;
+  const tot = labP+stuP||1;
+  const acts = (DB.activity||[]).slice(0,8);
+
+  return `
+    <div class="kpi-g">
+      <div class="kpi"><div class="lb">Entrate</div><div class="vl" style="color:var(--gn)">${euro(entrate)}</div><div class="ch" style="color:var(--gn)">Totale registrato</div></div>
+      <div class="kpi"><div class="lb">Uscite</div><div class="vl" style="color:var(--rd)">${euro(uscite)}</div><div class="ch">Totale spese</div></div>
+      <div class="kpi"><div class="lb">Clienti Attivi</div><div class="vl">${activeC}</div><div class="ch">su ${DB.clients.length} totali</div></div>
+      <div class="kpi"><div class="lb">Progetti Attivi</div><div class="vl" style="color:var(--bl)">${activeP}</div><div class="ch">${labP} LAB · ${stuP} STUDIO</div></div>
+    </div>
+    <div style="display:grid;grid-template-columns:2fr 1fr;gap:16px">
+      <div class="ct-w"><h3>Revenue Mensile</h3><div class="mc-c">${months.map((m,i)=>`<div class="mc-b" style="height:${Math.max(mData[i]/mx*100,4)}%;background:${mData[i]?'var(--ac)':'var(--s3)'}" title="${euro(mData[i])}"><div class="mc-l">${m}</div></div>`).join('')}</div></div>
+      <div class="ct-w"><h3>Progetti per Brand</h3>
+        <div style="padding:10px 0">
+          <div style="display:flex;justify-content:space-between;font-size:13px;margin-bottom:6px">${brandTag('LAB')}<strong>${labP}</strong></div>${progressBar(labP/tot*100,'var(--ac)')}
+          <div style="display:flex;justify-content:space-between;font-size:13px;margin:14px 0 6px">${brandTag('STUDIO')}<strong>${stuP}</strong></div>${progressBar(stuP/tot*100,'var(--pk)')}
+          <div style="margin-top:20px;font-size:12px;color:var(--dm)"><strong>Team:</strong> ${DB.team.length} · <strong>Automazioni:</strong> ${DB.automations.filter(a=>a.active).length} attive</div>
+        </div>
+      </div>
+    </div>
+    <div class="tw"><div class="th"><h3>Attività Recenti</h3><span style="font-size:11px;color:var(--dm)">Aggiornamento real-time</span></div>
+      <table><thead><tr><th>Azione</th><th>Dettaglio</th><th>Data</th></tr></thead>
+      <tbody>${acts.length?acts.map(a=>`<tr><td>${a.action}</td><td>${a.detail}</td><td>${new Date(a.date).toLocaleDateString('it-IT')} ${new Date(a.date).toLocaleTimeString('it-IT',{hour:'2-digit',minute:'2-digit'})}</td></tr>`).join(''):'<tr><td colspan="3" style="text-align:center;color:var(--dm);padding:30px">Nessuna attività registrata</td></tr>'}</tbody></table>
+    </div>`;
+}
+
+// ── CLIENTS ──
+function rClients() {
+  const active = DB.clients.filter(c=>c.status==='active').length;
+  const tv = DB.clients.reduce((s,c)=>s+c.value,0);
+  return `
+    <div class="kpi-g">
+      <div class="kpi"><div class="lb">Totale</div><div class="vl">${DB.clients.length}</div></div>
+      <div class="kpi"><div class="lb">Attivi</div><div class="vl" style="color:var(--gn)">${active}</div></div>
+      <div class="kpi"><div class="lb">Valore Totale</div><div class="vl" style="color:var(--ac)">${euro(tv)}</div></div>
+      <div class="kpi"><div class="lb">Valore Medio</div><div class="vl">${DB.clients.length?euro(Math.round(tv/DB.clients.length)):'€0'}</div></div>
+    </div>
+    <div class="tw"><div class="th"><h3>Tutti i Clienti</h3><button class="btn btn-p btn-sm" onclick="openModal('client')">+ Aggiungi</button></div>
+      <table><thead><tr><th>Cliente</th><th>Brand</th><th>Stato</th><th>Progetti</th><th>Valore</th><th>Azioni</th></tr></thead>
+      <tbody>${DB.clients.map(c=>`<tr>
+        <td><strong>${c.name}</strong><br><span style="font-size:11px;color:var(--dm)">${c.email||''}</span></td>
+        <td>${brandTag(c.brand)}</td>
+        <td>${statusBadge(c.status)}</td>
+        <td>${DB.projects.filter(p=>p.client===c.name).length}</td>
+        <td><strong>${euro(c.value)}</strong></td>
+        <td><button class="btn-i" onclick="openModal('client',${c.id})">✏️</button> <button class="btn-i" onclick="deleteItem('clients',${c.id})">🗑️</button></td>
+      </tr>`).join('')}</tbody></table>
+    </div>`;
+}
+
+// ── TEAM ──
+function rTeam() {
+  const aw = DB.team.length ? Math.round(DB.team.reduce((s,t)=>s+t.workload,0)/DB.team.length) : 0;
+  return `
+    <div class="kpi-g">
+      <div class="kpi"><div class="lb">Membri</div><div class="vl">${DB.team.length}</div></div>
+      <div class="kpi"><div class="lb">Workload Medio</div><div class="vl" style="color:${aw>80?'var(--rd)':aw>60?'var(--or)':'var(--gn)'}">${aw}%</div></div>
+      <div class="kpi"><div class="lb">LAB</div><div class="vl">${DB.team.filter(t=>t.brand==='LAB'||t.brand==='Entrambi').length}</div></div>
+      <div class="kpi"><div class="lb">STUDIO</div><div class="vl">${DB.team.filter(t=>t.brand==='STUDIO'||t.brand==='Entrambi').length}</div></div>
+    </div>
+    <div class="tw"><div class="th"><h3>Team CREA</h3><button class="btn btn-p btn-sm" onclick="openModal('member')">+ Aggiungi</button></div>
+      <table><thead><tr><th>Nome</th><th>Ruolo</th><th>Brand</th><th>Progetti</th><th>Workload</th><th>Azioni</th></tr></thead>
+      <tbody>${DB.team.map(t=>`<tr>
+        <td><strong>${t.name}</strong></td><td>${t.role}</td>
+        <td><span class="bt ${t.brand==='LAB'?'bt-l':t.brand==='STUDIO'?'bt-s':''}" style="${t.brand==='Entrambi'?'background:rgba(255,255,255,.08);color:var(--tx)':''}">${t.brand}</span></td>
+        <td>${t.projects}</td>
+        <td><div style="display:flex;align-items:center;gap:8px"><div style="width:80px">${progressBar(t.workload, t.workload>80?'var(--rd)':t.workload>60?'var(--or)':'var(--gn)')}</div><span style="font-size:12px;font-weight:600">${t.workload}%</span></div></td>
+        <td><button class="btn-i" onclick="openModal('member',${t.id})">✏️</button> <button class="btn-i" onclick="deleteItem('team',${t.id})">🗑️</button></td>
+      </tr>`).join('')}</tbody></table>
+    </div>`;
+}
+
+// ── PROJECTS ──
+function rProjects() {
+  const ap = DB.projects.reduce((s,p)=>s+p.progress,0);
+  const avg = DB.projects.length ? Math.round(ap/DB.projects.length) : 0;
+  const tb = DB.projects.reduce((s,p)=>s+p.budget,0);
+  const ts = DB.projects.reduce((s,p)=>s+p.spent,0);
+  const sts = [{k:'backlog',l:'📥 Backlog',c:'var(--dm)'},{k:'in_progress',l:'🔨 In Corso',c:'var(--bl)'},{k:'review',l:'👀 Review',c:'var(--or)'},{k:'completed',l:'✅ Completato',c:'var(--gn)'}];
+
+  return `
+    <div class="kpi-g">
+      <div class="kpi"><div class="lb">Totali</div><div class="vl">${DB.projects.length}</div></div>
+      <div class="kpi"><div class="lb">Avanzamento Medio</div><div class="vl" style="color:var(--bl)">${avg}%</div></div>
+      <div class="kpi"><div class="lb">Budget Totale</div><div class="vl">${euro(tb)}</div></div>
+      <div class="kpi"><div class="lb">Speso</div><div class="vl" style="color:${ts>tb*.8?'var(--rd)':'var(--or)'}">${euro(ts)}</div></div>
+    </div>
+    <div class="tabs">
+      <button class="tab on" onclick="switchTab(this,'pKanban')">📌 Kanban</button>
+      <button class="tab" onclick="switchTab(this,'pList')">📋 Lista</button>
+    </div>
+    <div class="tc" id="pKanban">
+      <div class="kb">${sts.map(s=>{
+        const items = DB.projects.filter(p=>p.status===s.k);
+        return `<div class="kc"><div class="kc-h" style="color:${s.c}">${s.l}<span class="ct">${items.length}</span></div>
+          ${items.map(p=>`<div class="kk" onclick="openModal('project',${p.id})">
+            <h4>${p.name}</h4><p>${p.client||''}</p>
+            ${progressBar(p.progress, s.c)}
+            <div class="kk-m">${brandTag(p.brand)}<span style="font-size:11px;color:var(--dm)">${p.deadline||''}</span></div>
+          </div>`).join('')}
+          <button class="btn btn-s btn-sm" style="width:100%;margin-top:6px" onclick="openModal('project',null,'${s.k}')">+ Aggiungi</button>
+        </div>`;
+      }).join('')}</div>
+    </div>
+    <div class="tc" id="pList" style="display:none">
+      <div class="tw"><div class="th"><h3>Tutti i Progetti</h3><button class="btn btn-p btn-sm" onclick="openModal('project')">+ Nuovo</button></div>
+        <table><thead><tr><th>Progetto</th><th>Cliente</th><th>Brand</th><th>Stato</th><th>Avanzamento</th><th>Scadenza</th><th>Azioni</th></tr></thead>
+        <tbody>${DB.projects.map(p=>`<tr>
+          <td><strong>${p.name}</strong></td><td>${p.client||''}</td><td>${brandTag(p.brand)}</td><td>${statusBadge(p.status)}</td>
+          <td><div style="display:flex;align-items:center;gap:8px"><div style="width:80px">${progressBar(p.progress)}</div><span style="font-size:12px">${p.progress}%</span></div></td>
+          <td>${p.deadline||''}</td>
+          <td><button class="btn-i" onclick="openModal('project',${p.id})">✏️</button> <button class="btn-i" onclick="deleteItem('projects',${p.id})">🗑️</button></td>
+        </tr>`).join('')}</tbody></table>
+      </div>
+    </div>`;
+}
+
+// ── AUTOMATIONS ──
+function rAutomations() {
+  const ac = DB.automations.filter(a=>a.active).length;
+  const tr = DB.automations.reduce((s,a)=>s+a.runs,0);
+  return `
+    <div class="kpi-g">
+      <div class="kpi"><div class="lb">Automazioni</div><div class="vl">${DB.automations.length}</div></div>
+      <div class="kpi"><div class="lb">Attive</div><div class="vl" style="color:var(--gn)">${ac}</div></div>
+      <div class="kpi"><div class="lb">Esecuzioni</div><div class="vl" style="color:var(--cy)">${tr}</div></div>
+      <div class="kpi"><div class="lb">Ore Risparmiate</div><div class="vl" style="color:var(--ac)">~${Math.round(tr*0.3)}h</div></div>
+    </div>
+    <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:16px">
+      <h3 style="font-size:15px;font-weight:700">Tutte le Automazioni</h3>
+      <button class="btn btn-p btn-sm" onclick="openModal('automation')">+ Nuova</button>
+    </div>
+    ${DB.automations.map(a=>`<div class="au">
+      <div class="au-s ${a.active?'on':'off'}"></div>
+      <div class="au-i"><h4>${a.name}</h4><p>${a.description||''}</p>
+        <div style="font-size:11px;color:var(--dm);margin-top:4px">Trigger: <strong>${a.trigger||''}</strong> · Esecuzioni: <strong>${a.runs}</strong></div>
+      </div>
+      <button class="tg ${a.active?'on':''}" onclick="toggleAuto(${a.id})"></button>
+      <button class="btn-i" onclick="openModal('automation',${a.id})">✏️</button>
+      <button class="btn-i" onclick="deleteItem('automations',${a.id})">🗑️</button>
+    </div>`).join('')}`;
+}
+
+async function toggleAuto(id) {
+  const a = DB.automations.find(x=>x.id===id);
+  if (!a) return;
+  await api('PUT', `/api/automations/${id}`, { active: !a.active });
+  toast(`${a.name} ${!a.active?'attivata':'disattivata'}`, !a.active?'ok':'in');
+}
+
+// ── AI ──
+function rAi() {
+  return `
+    <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:20px">
+      <div><h3 style="font-size:17px;font-weight:700">🧠 AI Intelligence Hub</h3><p style="font-size:13px;color:var(--dm);margin-top:4px">Analisi automatica dei dati CREA</p></div>
+      <button class="btn btn-p btn-sm" onclick="loadAiInsights()">🔄 Aggiorna</button>
+    </div>
+    <div id="aiInsights"><div style="text-align:center;padding:40px;color:var(--dm)">Caricamento insights...</div></div>
+    <div class="chat-w">
+      <h4 style="font-size:14px;font-weight:700;margin-bottom:12px">💬 CREA Assistant</h4>
+      <div class="chat-m" id="chatMsgs"><div class="msg b">Ciao! Chiedimi qualsiasi cosa sui dati CREA. Esempio: "Quanti progetti sono attivi?" o "Qual è il margine netto?"</div></div>
+      <div class="chat-i"><input id="chatIn" placeholder="Scrivi una domanda..." onkeypress="if(event.key==='Enter')sendChat()"><button class="btn btn-p" onclick="sendChat()">Invia</button></div>
+    </div>`;
+}
+
+async function loadAiInsights() {
+  const insights = await api('GET', '/api/ai/insights');
+  document.getElementById('aiInsights').innerHTML = insights.map(i => `
+    <div class="ai-c"><h4>${i.title}<span class="pr pr-${i.priority}">${i.priority==='high'?'URGENTE':i.priority==='medium'?'MEDIO':'INFO'}</span></h4><p>${i.description}</p></div>
+  `).join('');
+}
+
+function sendChat() {
+  const input = document.getElementById('chatIn');
+  const msg = input.value.trim();
+  if (!msg) return;
+  const cont = document.getElementById('chatMsgs');
+  cont.innerHTML += `<div class="msg u">${msg}</div>`;
+  input.value = '';
+
+  const q = msg.toLowerCase();
+  let r = '';
+  if (q.includes('client')) {
+    const ac = DB.clients.filter(c=>c.status==='active').length;
+    r = `Hai ${DB.clients.length} clienti (${ac} attivi). Valore totale: ${euro(DB.clients.reduce((s,c)=>s+c.value,0))}.`;
+  } else if (q.includes('progett')) {
+    const ac = DB.projects.filter(p=>p.status==='in_progress').length;
+    r = `${DB.projects.length} progetti totali, ${ac} in corso. Avanzamento medio: ${DB.projects.length?Math.round(DB.projects.reduce((s,p)=>s+p.progress,0)/DB.projects.length):0}%.`;
+  } else if (q.includes('team')||q.includes('chi')) {
+    const b = DB.team.reduce((a,b)=>a.workload>b.workload?a:b,DB.team[0]);
+    r = `Team: ${DB.team.length} persone. Più carico: ${b?b.name+' ('+b.workload+'%)':'N/D'}.`;
+  } else if (q.includes('fattur')||q.includes('finanz')||q.includes('margin')||q.includes('soldi')) {
+    const e = DB.finance.filter(f=>f.type==='entrata').reduce((s,f)=>s+f.amount,0);
+    const u = DB.finance.filter(f=>f.type==='uscita').reduce((s,f)=>s+f.amount,0);
+    r = `Entrate: ${euro(e)}. Uscite: ${euro(u)}. Margine: ${euro(e-u)}.`;
+  } else if (q.includes('scadenz')||q.includes('urgent')) {
+    const up = DB.projects.filter(p=>p.status!=='completed').sort((a,b)=>new Date(a.deadline)-new Date(b.deadline))[0];
+    r = up ? `Prossima scadenza: "${up.name}" il ${up.deadline} (${up.progress}%).` : 'Nessuna scadenza attiva.';
+  } else if (q.includes('valor')||q.includes('miglior')) {
+    const best = [...DB.clients].sort((a,b)=>b.value-a.value)[0];
+    r = best ? `Cliente top: "${best.name}" — ${euro(best.value)} (${best.brand}).` : 'Nessun dato.';
+  } else {
+    r = `Riepilogo: ${DB.clients.length} clienti, ${DB.projects.length} progetti, ${DB.team.length} team, ${DB.automations.filter(a=>a.active).length} automazioni attive. Chiedi qualcosa di specifico!`;
+  }
+  setTimeout(() => { cont.innerHTML += `<div class="msg b">${r}</div>`; cont.scrollTop = cont.scrollHeight; }, 300);
+}
+
+// ── FINANCE ──
+function rFinance() {
+  const e = DB.finance.filter(f=>f.type==='entrata').reduce((s,f)=>s+f.amount,0);
+  const u = DB.finance.filter(f=>f.type==='uscita').reduce((s,f)=>s+f.amount,0);
+  const months = ['Gen','Feb','Mar','Apr','Mag','Giu'];
+  const lD = months.map((_,i)=>DB.finance.filter(f=>f.brand==='LAB'&&f.type==='entrata'&&new Date(f.date).getMonth()===i).reduce((s,f)=>s+f.amount,0));
+  const sD = months.map((_,i)=>DB.finance.filter(f=>f.brand==='STUDIO'&&f.type==='entrata'&&new Date(f.date).getMonth()===i).reduce((s,f)=>s+f.amount,0));
+  const ml = Math.max(...lD,1), ms = Math.max(...sD,1);
+  const sorted = [...DB.finance].sort((a,b)=>new Date(b.date)-new Date(a.date));
+
+  return `
+    <div class="kpi-g">
+      <div class="kpi"><div class="lb">Entrate</div><div class="vl" style="color:var(--gn)">${euro(e)}</div></div>
+      <div class="kpi"><div class="lb">Uscite</div><div class="vl" style="color:var(--rd)">${euro(u)}</div></div>
+      <div class="kpi"><div class="lb">Margine</div><div class="vl" style="color:${e-u>0?'var(--gn)':'var(--rd)'}">${euro(e-u)}</div></div>
+      <div class="kpi"><div class="lb">Movimenti</div><div class="vl">${DB.finance.length}</div></div>
+    </div>
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:16px">
+      <div class="ct-w"><h3>Revenue CREA LAB</h3><div class="mc-c">${months.map((m,i)=>`<div class="mc-b" style="height:${Math.max(lD[i]/ml*100,4)}%;background:var(--ac)" title="${euro(lD[i])}"><div class="mc-l">${m}</div></div>`).join('')}</div></div>
+      <div class="ct-w"><h3>Revenue CREA STUDIO</h3><div class="mc-c">${months.map((m,i)=>`<div class="mc-b" style="height:${Math.max(sD[i]/ms*100,4)}%;background:var(--pk)" title="${euro(sD[i])}"><div class="mc-l">${m}</div></div>`).join('')}</div></div>
+    </div>
+    <div class="tw"><div class="th"><h3>Movimenti</h3><button class="btn btn-p btn-sm" onclick="openModal('movement')">+ Aggiungi</button></div>
+      <table><thead><tr><th>Data</th><th>Descrizione</th><th>Brand</th><th>Tipo</th><th>Importo</th></tr></thead>
+      <tbody>${sorted.map(f=>`<tr>
+        <td>${new Date(f.date).toLocaleDateString('it-IT')}</td><td>${f.description}</td><td>${brandTag(f.brand)}</td>
+        <td><span class="sb-b ${f.type==='entrata'?'st-active':'st-paused'}">${f.type==='entrata'?'Entrata':'Uscita'}</span></td>
+        <td style="font-weight:700;color:${f.type==='entrata'?'var(--gn)':'var(--rd)'}">${euro(f.amount)}</td>
+      </tr>`).join('')}</tbody></table>
+    </div>`;
+}
+
+// ── SETTINGS ──
+function rSettings() {
+  const s = DB.settings || {};
+  return `
+    <div class="cg">
+      <div class="cd"><h3 style="font-size:15px;font-weight:700;margin-bottom:16px">🏢 Info Azienda</h3>
+        <div class="fg"><label>Nome Ecosistema</label><input value="${s.companyName||''}" onchange="saveSetting('companyName',this.value)"></div>
+        <div class="fr"><div class="fg"><label>Brand 1</label><input value="${s.brand1||''}" onchange="saveSetting('brand1',this.value)"></div>
+        <div class="fg"><label>Brand 2</label><input value="${s.brand2||''}" onchange="saveSetting('brand2',this.value)"></div></div>
+        <div class="fg"><label>Email</label><input value="${s.email||''}" onchange="saveSetting('email',this.value)"></div>
+      </div>
+      <div class="cd"><h3 style="font-size:15px;font-weight:700;margin-bottom:16px">💾 Dati & Backup</h3>
+        <p style="font-size:13px;color:var(--dm);margin-bottom:14px">I dati sono salvati sul server in un file JSON persistente. Puoi esportare un backup.</p>
+        <div style="display:flex;gap:8px;flex-wrap:wrap">
+          <button class="btn btn-p btn-sm" onclick="exportJSON()">📥 Esporta JSON</button>
+          <label class="btn btn-s btn-sm" style="cursor:pointer">📤 Importa<input type="file" accept=".json" style="display:none" onchange="importJSON(event)"></label>
+        </div>
+      </div>
+      <div class="cd"><h3 style="font-size:15px;font-weight:700;margin-bottom:16px">🔌 Connessioni</h3>
+        <p style="font-size:13px;color:var(--dm);margin-bottom:10px">Server: <strong style="color:var(--gn)">Connesso</strong></p>
+        <p style="font-size:13px;color:var(--dm)">WebSocket: <strong style="color:var(--gn)">Attivo</strong></p>
+        <p style="font-size:13px;color:var(--dm);margin-top:6px">Porta: <strong>3000</strong></p>
+        <p style="font-size:13px;color:var(--dm);margin-top:10px">Il server accetta comandi API REST e aggiorna la dashboard in tempo reale via WebSocket.</p>
+      </div>
+    </div>`;
+}
+
+async function saveSetting(key, value) {
+  await api('PUT', '/api/settings', { [key]: value });
+  toast('Impostazione salvata','ok');
+}
+
+// ═══════════════════════════════════════
+// MODALS
+// ═══════════════════════════════════════
+function openModal(type, id=null, defStatus=null) {
+  editId = id;
+  const m = document.getElementById('modalBody');
+  let h = '';
+
+  if (type === 'client') {
+    const c = id ? DB.clients.find(x=>x.id===id) : {};
+    h = `<h3>${id?'✏️ Modifica':'➕ Nuovo'} Cliente</h3>
+      <div class="fg"><label>Nome *</label><input id="f_name" value="${c.name||''}"></div>
+      <div class="fr"><div class="fg"><label>Brand</label><select id="f_brand"><option value="LAB" ${c.brand==='LAB'?'selected':''}>CREA LAB</option><option value="STUDIO" ${c.brand==='STUDIO'?'selected':''}>CREA STUDIO</option></select></div>
+      <div class="fg"><label>Stato</label><select id="f_status"><option value="active" ${c.status==='active'?'selected':''}>Attivo</option><option value="pending" ${c.status==='pending'?'selected':''}>In attesa</option></select></div></div>
+      <div class="fr"><div class="fg"><label>Email</label><input id="f_email" value="${c.email||''}"></div><div class="fg"><label>Telefono</label><input id="f_phone" value="${c.phone||''}"></div></div>
+      <div class="fg"><label>Valore (€)</label><input type="number" id="f_value" value="${c.value||0}"></div>
+      <div class="fg"><label>Note</label><textarea id="f_notes">${c.notes||''}</textarea></div>
+      <div class="fa"><button class="btn btn-s" onclick="closeModal()">Annulla</button><button class="btn btn-p" onclick="saveModal('clients')">Salva</button></div>`;
+  } else if (type === 'member') {
+    const t = id ? DB.team.find(x=>x.id===id) : {};
+    h = `<h3>${id?'✏️ Modifica':'➕ Nuovo'} Membro</h3>
+      <div class="fg"><label>Nome *</label><input id="f_name" value="${t.name||''}"></div>
+      <div class="fg"><label>Ruolo</label><input id="f_role" value="${t.role||''}"></div>
+      <div class="fg"><label>Brand</label><select id="f_brand"><option value="LAB" ${t.brand==='LAB'?'selected':''}>CREA LAB</option><option value="STUDIO" ${t.brand==='STUDIO'?'selected':''}>CREA STUDIO</option><option value="Entrambi" ${t.brand==='Entrambi'?'selected':''}>Entrambi</option></select></div>
+      <div class="fr"><div class="fg"><label>Progetti</label><input type="number" id="f_projects" value="${t.projects||0}"></div>
+      <div class="fg"><label>Workload %</label><input type="number" id="f_workload" value="${t.workload||0}" min="0" max="100"></div></div>
+      <div class="fa"><button class="btn btn-s" onclick="closeModal()">Annulla</button><button class="btn btn-p" onclick="saveModal('team')">Salva</button></div>`;
+  } else if (type === 'project') {
+    const p = id ? DB.projects.find(x=>x.id===id) : {status:defStatus||'backlog'};
+    const cOpts = DB.clients.map(c=>`<option value="${c.name}" ${p.client===c.name?'selected':''}>${c.name}</option>`).join('');
+    const tOpts = DB.team.map(t=>`<option value="${t.name}" ${p.assignee===t.name?'selected':''}>${t.name}</option>`).join('');
+    h = `<h3>${id?'✏️ Modifica':'➕ Nuovo'} Progetto</h3>
+      <div class="fg"><label>Nome *</label><input id="f_name" value="${p.name||''}"></div>
+      <div class="fr"><div class="fg"><label>Cliente</label><select id="f_client"><option value="">—</option>${cOpts}</select></div>
+      <div class="fg"><label>Brand</label><select id="f_brand"><option value="LAB" ${p.brand==='LAB'?'selected':''}>CREA LAB</option><option value="STUDIO" ${p.brand==='STUDIO'?'selected':''}>CREA STUDIO</option></select></div></div>
+      <div class="fr"><div class="fg"><label>Stato</label><select id="f_status"><option value="backlog" ${p.status==='backlog'?'selected':''}>Backlog</option><option value="in_progress" ${p.status==='in_progress'?'selected':''}>In Corso</option><option value="review" ${p.status==='review'?'selected':''}>Review</option><option value="completed" ${p.status==='completed'?'selected':''}>Completato</option></select></div>
+      <div class="fg"><label>Avanzamento %</label><input type="number" id="f_progress" value="${p.progress||0}" min="0" max="100"></div></div>
+      <div class="fr"><div class="fg"><label>Budget (€)</label><input type="number" id="f_budget" value="${p.budget||0}"></div>
+      <div class="fg"><label>Speso (€)</label><input type="number" id="f_spent" value="${p.spent||0}"></div></div>
+      <div class="fr"><div class="fg"><label>Scadenza</label><input type="date" id="f_deadline" value="${p.deadline||''}"></div>
+      <div class="fg"><label>Assegnato a</label><select id="f_assignee"><option value="">—</option>${tOpts}</select></div></div>
+      <div class="fg"><label>Descrizione</label><textarea id="f_desc">${p.description||''}</textarea></div>
+      <div class="fa"><button class="btn btn-s" onclick="closeModal()">Annulla</button><button class="btn btn-p" onclick="saveModal('projects')">Salva</button></div>`;
+  } else if (type === 'automation') {
+    const a = id ? DB.automations.find(x=>x.id===id) : {};
+    h = `<h3>${id?'✏️ Modifica':'➕ Nuova'} Automazione</h3>
+      <div class="fg"><label>Nome *</label><input id="f_name" value="${a.name||''}"></div>
+      <div class="fg"><label>Descrizione</label><textarea id="f_desc">${a.description||''}</textarea></div>
+      <div class="fg"><label>Trigger</label><input id="f_trigger" value="${a.trigger||''}" placeholder="es. Ogni Lunedì 9:00"></div>
+      <div class="fa"><button class="btn btn-s" onclick="closeModal()">Annulla</button><button class="btn btn-p" onclick="saveModal('automations')">Salva</button></div>`;
+  } else if (type === 'movement') {
+    h = `<h3>➕ Nuovo Movimento</h3>
+      <div class="fg"><label>Data</label><input type="date" id="f_date" value="${new Date().toISOString().slice(0,10)}"></div>
+      <div class="fg"><label>Descrizione *</label><input id="f_desc"></div>
+      <div class="fr"><div class="fg"><label>Brand</label><select id="f_brand"><option value="LAB">CREA LAB</option><option value="STUDIO">CREA STUDIO</option></select></div>
+      <div class="fg"><label>Tipo</label><select id="f_type"><option value="entrata">Entrata</option><option value="uscita">Uscita</option></select></div></div>
+      <div class="fg"><label>Importo (€)</label><input type="number" id="f_amount" value="0"></div>
+      <div class="fa"><button class="btn btn-s" onclick="closeModal()">Annulla</button><button class="btn btn-p" onclick="saveModal('finance')">Salva</button></div>`;
+  }
+  m.innerHTML = h;
+  document.getElementById('modal').classList.add('show');
+}
+
+function closeModal() { document.getElementById('modal').classList.remove('show'); editId = null; }
+
+async function saveModal(coll) {
+  let data = {};
+  if (coll === 'clients') {
+    data = { name:gv('f_name'),brand:gv('f_brand'),status:gv('f_status'),email:gv('f_email'),phone:gv('f_phone'),value:parseInt(gv('f_value'))||0,notes:gv('f_notes'),created:editId?(DB.clients.find(x=>x.id===editId)?.created||today()):today() };
+    if (!data.name) { toast('Nome obbligatorio','er'); return; }
+  } else if (coll === 'team') {
+    data = { name:gv('f_name'),role:gv('f_role'),brand:gv('f_brand'),projects:parseInt(gv('f_projects'))||0,workload:parseInt(gv('f_workload'))||0 };
+    if (!data.name) { toast('Nome obbligatorio','er'); return; }
+  } else if (coll === 'projects') {
+    data = { name:gv('f_name'),client:gv('f_client'),brand:gv('f_brand'),status:gv('f_status'),progress:parseInt(gv('f_progress'))||0,budget:parseInt(gv('f_budget'))||0,spent:parseInt(gv('f_spent'))||0,deadline:gv('f_deadline'),assignee:gv('f_assignee'),description:gv('f_desc') };
+    if (!data.name) { toast('Nome obbligatorio','er'); return; }
+  } else if (coll === 'automations') {
+    data = { name:gv('f_name'),description:gv('f_desc'),trigger:gv('f_trigger'),active:editId?(DB.automations.find(x=>x.id===editId)?.active??true):true,runs:editId?(DB.automations.find(x=>x.id===editId)?.runs??0):0 };
+    if (!data.name) { toast('Nome obbligatorio','er'); return; }
+  } else if (coll === 'finance') {
+    const type = gv('f_type');
+    data = { date:gv('f_date'),description:gv('f_desc'),brand:gv('f_brand'),type,amount:parseInt(gv('f_amount'))||0 };
+    if (!data.description) { toast('Descrizione obbligatoria','er'); return; }
+  }
+
+  if (editId) await api('PUT', `/api/${coll}/${editId}`, data);
+  else await api('POST', `/api/${coll}`, data);
+
+  closeModal();
+  toast('Salvato!','ok');
+}
+
+function gv(id) { const e = document.getElementById(id); return e ? e.value : ''; }
+function today() { return new Date().toISOString().slice(0,10); }
+
+async function deleteItem(coll, id) {
+  if (!confirm('Eliminare questo elemento?')) return;
+  await api('DELETE', `/api/${coll}/${id}`);
+  toast('Eliminato','in');
+}
+
+function exportJSON() {
+  const b = new Blob([JSON.stringify(DB,null,2)],{type:'application/json'});
+  const a = document.createElement('a');
+  a.href = URL.createObjectURL(b);
+  a.download = `crea-backup-${today()}.json`;
+  a.click();
+  toast('Backup esportato!','ok');
+}
+
+async function importJSON(e) {
+  const f = e.target.files[0];
+  if (!f) return;
+  const r = new FileReader();
+  r.onload = async function(ev) {
+    try {
+      const d = JSON.parse(ev.target.result);
+      for (const k of ['clients','team','projects','automations','finance']) {
+        if (d[k]) await api('PUT', `/api/${k}`, d[k]);
+      }
+      toast('Importato!','ok');
+    } catch(err) { toast('File non valido','er'); }
+  };
+  r.readAsText(f);
+}
+
+function doSearch(q) {
+  if (!q) return;
+  q = q.toLowerCase();
+  if (DB.clients.find(c=>c.name.toLowerCase().includes(q))) { document.querySelector('[data-s="clients"]').click(); return; }
+  if (DB.projects.find(p=>p.name.toLowerCase().includes(q))) { document.querySelector('[data-s="projects"]').click(); return; }
+  if (DB.team.find(t=>t.name.toLowerCase().includes(q))) { document.querySelector('[data-s="team"]').click(); return; }
+}
+</script>
+</body>
+</html>
