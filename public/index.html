@@ -159,6 +159,32 @@ tr:hover td{background:rgba(255,255,255,.02)}
 @keyframes si{from{opacity:0;transform:translateX(40px)}to{opacity:1;transform:translateX(0)}}
 @keyframes flash{0%{box-shadow:0 0 0 0 rgba(108,92,231,.4)}100%{box-shadow:0 0 0 0 transparent}}
 .flash{animation:flash .6s ease}
+
+/* CALENDAR */
+.cal-h{display:flex;justify-content:space-between;align-items:center;margin-bottom:16px}
+.cal-h h3{font-size:15px;font-weight:700}
+.cal-nav{display:flex;gap:8px}
+.cal-grid{display:grid;grid-template-columns:repeat(7,1fr);gap:12px;margin-bottom:20px}
+.cal-day{background:var(--s1);border:1px solid var(--bd);border-radius:12px;padding:12px;min-height:200px}
+.cal-day-h{font-size:13px;font-weight:700;color:var(--ac);margin-bottom:10px;padding-bottom:8px;border-bottom:1px solid var(--bd)}
+.cal-day-d{font-size:11px;color:var(--dm);margin-bottom:10px}
+.cal-post{background:var(--s2);border-left:3px solid var(--ac);border-radius:6px;padding:8px;margin-bottom:8px;font-size:11px;cursor:pointer;transition:all .2s}
+.cal-post:hover{border-color:var(--ac2);transform:translateX(2px)}
+.cal-post-t{font-weight:600;color:var(--tx);margin-bottom:2px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.cal-post-c{font-size:10px;color:var(--dm);margin-bottom:2px}
+.cal-post-m{display:flex;align-items:center;gap:4px;font-size:10px}
+.cal-post-p{padding:2px 6px;border-radius:4px;background:rgba(255,255,255,.08);font-size:9px;font-weight:600}
+.cal-add{width:100%;padding:6px;border:1px dashed var(--bd);border-radius:6px;background:none;color:var(--dm);font-size:12px;transition:all .2s;margin-top:auto}
+.cal-add:hover{border-color:var(--ac);color:var(--ac);background:rgba(108,92,231,.08)}
+
+/* WOO STATUS BADGES */
+.woo-status{padding:4px 10px;border-radius:6px;font-size:11px;font-weight:600;display:inline-block}
+.woo-processing{background:rgba(245,158,11,.15);color:var(--or)}
+.woo-completed{background:rgba(16,185,129,.15);color:var(--gn)}
+.woo-pending{background:rgba(59,130,246,.15);color:var(--bl)}
+.woo-refunded{background:rgba(239,68,68,.15);color:var(--rd)}
+.woo-on-hold{background:rgba(245,158,11,.12);color:var(--or)}
+.woo-cancelled{background:rgba(239,68,68,.15);color:var(--rd)}
 </style>
 </head>
 <body>
@@ -174,11 +200,16 @@ tr:hover td{background:rgba(255,255,255,.02)}
     <button class="nav-b" data-s="clients"><span class="ic">👥</span>Clienti<span class="bd" id="bClients">0</span></button>
     <button class="nav-b" data-s="team"><span class="ic">🧑‍💼</span>Team<span class="bd" id="bTeam">0</span></button>
     <button class="nav-b" data-s="projects"><span class="ic">🚀</span>Progetti<span class="bd" id="bProjects">0</span></button>
+    <button class="nav-b" data-s="calendar"><span class="ic">📅</span>Calendario</button>
   </div>
   <div class="nav-g">
     <div class="nav-l">Intelligenza</div>
     <button class="nav-b" data-s="automations"><span class="ic">⚡</span>Automazioni</button>
     <button class="nav-b" data-s="ai"><span class="ic">🧠</span>AI Hub</button>
+  </div>
+  <div class="nav-g">
+    <div class="nav-l">CREA LAB</div>
+    <button class="nav-b" data-s="lab"><span class="ic">🏭</span>CREA LAB<span class="bd" id="bWoo">0</span></button>
   </div>
   <div class="nav-g">
     <div class="nav-l">Gestione</div>
@@ -213,6 +244,7 @@ tr:hover td{background:rgba(255,255,255,.02)}
 let DB = {};
 let section = 'overview';
 let editId = null;
+let currentWeekStart = null;
 const API = '';
 
 // ═══════════════════════════════════════
@@ -227,6 +259,9 @@ socket.on('connect', () => {
 
 socket.on('init', (data) => {
   DB = data;
+  if (!DB.calendar_posts) DB.calendar_posts = [];
+  if (!DB.woo_orders) DB.woo_orders = [];
+  if (!DB.woo_products) DB.woo_products = [];
   render();
 });
 
@@ -260,6 +295,18 @@ socket.on('settings_update', (settings) => {
   if (section === 'settings') render();
 });
 
+socket.on('woo_update', (wooData) => {
+  if (wooData.orders) DB.woo_orders = wooData.orders;
+  if (wooData.products) DB.woo_products = wooData.products;
+  if (section === 'lab') render();
+  document.getElementById('bWoo').textContent = (DB.woo_orders || []).length;
+});
+
+socket.on('calendar_update', (calData) => {
+  if (calData.posts) DB.calendar_posts = calData.posts;
+  if (section === 'calendar') render();
+});
+
 socket.on('disconnect', () => {
   toast('Disconnesso dal server', 'er');
 });
@@ -282,7 +329,18 @@ document.querySelectorAll('.nav-b[data-s]').forEach(b => {
     document.querySelectorAll('.nav-b').forEach(x => x.classList.remove('on'));
     b.classList.add('on');
     section = b.dataset.s;
-    const t = {overview:'Dashboard Overview',clients:'Gestione Clienti',team:'Team & Dipendenti',projects:'Progetti & Avanzamento',automations:'Automazioni & Software',ai:'AI Intelligence Hub',finance:'Finanze & Fatturazione',settings:'Impostazioni'};
+    const t = {
+      overview:'Dashboard Overview',
+      clients:'Gestione Clienti',
+      team:'Team & Dipendenti',
+      projects:'Progetti & Avanzamento',
+      calendar:'Calendario Editoriale',
+      automations:'Automazioni & Software',
+      ai:'AI Intelligence Hub',
+      lab:'CREA LAB',
+      finance:'Finanze & Fatturazione',
+      settings:'Impostazioni'
+    };
     document.getElementById('pageTitle').textContent = t[section] || '';
     render();
   });
@@ -296,7 +354,7 @@ function switchTab(btn, id) {
 }
 
 function mainAction() {
-  const m = {clients:'client',team:'member',projects:'project',automations:'automation',finance:'movement'};
+  const m = {clients:'client',team:'member',projects:'project',automations:'automation',finance:'movement',calendar:'calpost'};
   if (m[section]) openModal(m[section]);
 }
 
@@ -312,6 +370,92 @@ function toast(msg, type='in') {
 }
 
 // ═══════════════════════════════════════
+// CALENDAR HELPERS
+// ═══════════════════════════════════════
+function getWeekStart(date) {
+  const d = new Date(date);
+  const day = d.getDay();
+  const diff = d.getDate() - day + (day === 0 ? -6 : 1);
+  return new Date(d.setDate(diff));
+}
+
+function formatDate(d) {
+  return d.toISOString().split('T')[0];
+}
+
+function getPostsForDay(dayDate) {
+  if (!DB.calendar_posts) return [];
+  return DB.calendar_posts.filter(p => p.date === formatDate(dayDate));
+}
+
+function getStatusColor(status) {
+  const colors = {draft:'var(--dm)',scheduled:'var(--cy)',published:'var(--gn)'};
+  return colors[status] || 'var(--dm)';
+}
+
+function initCurrentWeek() {
+  if (!currentWeekStart) {
+    currentWeekStart = getWeekStart(new Date());
+  }
+  return currentWeekStart;
+}
+
+function prevWeek() {
+  const d = new Date(currentWeekStart);
+  d.setDate(d.getDate() - 7);
+  currentWeekStart = d;
+  render();
+}
+
+function nextWeek() {
+  const d = new Date(currentWeekStart);
+  d.setDate(d.getDate() + 7);
+  currentWeekStart = d;
+  render();
+}
+
+// ═══════════════════════════════════════
+// WOO HELPERS
+// ═══════════════════════════════════════
+function getWooStatusLabel(status) {
+  const m = {
+    processing:'In Elaborazione',
+    completed:'Completato',
+    pending:'In Sospeso',
+    refunded:'Rimborsato',
+    'on-hold':'In Attesa',
+    cancelled:'Annullato'
+  };
+  return m[status] || status;
+}
+
+function getWooStatusClass(status) {
+  return 'woo-' + (status || 'pending');
+}
+
+function getWooKpis() {
+  const orders = DB.woo_orders || [];
+  const totalOrders = orders.length;
+  const totalRevenue = orders.reduce((s, o) => s + (o.total || 0), 0);
+  const processing = orders.filter(o => o.status === 'processing').length;
+  const completed = orders.filter(o => o.status === 'completed').length;
+  return { totalOrders, totalRevenue, processing, completed };
+}
+
+async function syncWooOrders() {
+  try {
+    const data = await api('GET', '/api/woo/orders');
+    DB.woo_orders = data.orders || [];
+    DB.woo_products = data.products || [];
+    document.getElementById('bWoo').textContent = DB.woo_orders.length;
+    render();
+    toast('Ordini sincronizzati!', 'ok');
+  } catch (err) {
+    toast('Errore nella sincronizzazione', 'er');
+  }
+}
+
+// ═══════════════════════════════════════
 // RENDER
 // ═══════════════════════════════════════
 function render() {
@@ -322,8 +466,10 @@ function render() {
     case 'clients': c.innerHTML = rClients(); break;
     case 'team': c.innerHTML = rTeam(); break;
     case 'projects': c.innerHTML = rProjects(); break;
+    case 'calendar': c.innerHTML = rCalendar(); break;
     case 'automations': c.innerHTML = rAutomations(); break;
     case 'ai': c.innerHTML = rAi(); loadAiInsights(); break;
+    case 'lab': c.innerHTML = rLab(); break;
     case 'finance': c.innerHTML = rFinance(); break;
     case 'settings': c.innerHTML = rSettings(); break;
   }
@@ -334,6 +480,7 @@ function updateBadges() {
   document.getElementById('bClients').textContent = DB.clients.length;
   document.getElementById('bTeam').textContent = DB.team.length;
   document.getElementById('bProjects').textContent = DB.projects.filter(p=>p.status!=='completed').length;
+  document.getElementById('bWoo').textContent = (DB.woo_orders || []).length;
 }
 
 function euro(n) { return '€' + Number(n).toLocaleString('it-IT'); }
@@ -472,6 +619,93 @@ function rProjects() {
           <td><button class="btn-i" onclick="openModal('project',${p.id})">✏️</button> <button class="btn-i" onclick="deleteItem('projects',${p.id})">🗑️</button></td>
         </tr>`).join('')}</tbody></table>
       </div>
+    </div>`;
+}
+
+// ── CALENDAR ──
+function rCalendar() {
+  initCurrentWeek();
+  const days = ['Lunedì', 'Martedì', 'Mercoledì', 'Giovedì', 'Venerdì', 'Sabato', 'Domenica'];
+  const week = [];
+  for (let i = 0; i < 7; i++) {
+    const d = new Date(currentWeekStart);
+    d.setDate(d.getDate() + i);
+    week.push(d);
+  }
+
+  const weekStr = week[0].toLocaleDateString('it-IT', {day:'numeric',month:'short'}) + ' - ' + week[6].toLocaleDateString('it-IT', {day:'numeric',month:'short',year:'numeric'});
+
+  return `
+    <div class="cal-h">
+      <div>
+        <h3>Calendario Editoriale</h3>
+        <p style="font-size:12px;color:var(--dm);margin-top:4px">${weekStr}</p>
+      </div>
+      <div class="cal-nav">
+        <button class="btn btn-s btn-sm" onclick="prevWeek()">← Precedente</button>
+        <button class="btn btn-s btn-sm" onclick="nextWeek()">Successiva →</button>
+        <button class="btn btn-p btn-sm" onclick="openModal('calpost')">+ Nuovo Post</button>
+      </div>
+    </div>
+    <div class="cal-grid">
+      ${week.map((d, i) => {
+        const posts = getPostsForDay(d);
+        return `
+          <div class="cal-day">
+            <div class="cal-day-h">${days[i]}</div>
+            <div class="cal-day-d">${d.getDate()}</div>
+            ${posts.map(p => `
+              <div class="cal-post" style="border-left-color:${getStatusColor(p.status)}">
+                <div class="cal-post-t">${p.title}</div>
+                <div class="cal-post-c">${p.client}</div>
+                <div class="cal-post-m">
+                  <span class="cal-post-p">${p.platform}</span>
+                  <span style="font-size:10px;color:var(--dm)">${p.time || ''}</span>
+                </div>
+              </div>
+            `).join('')}
+            <button class="cal-add" onclick="openModal('calpost',null,'${formatDate(d)}')">+</button>
+          </div>
+        `;
+      }).join('')}
+    </div>`;
+}
+
+// ── LAB ──
+function rLab() {
+  const kpis = getWooKpis();
+  const orders = DB.woo_orders || [];
+  const products = DB.woo_products || [];
+
+  return `
+    <div class="kpi-g">
+      <div class="kpi"><div class="lb">Totale Ordini</div><div class="vl">${kpis.totalOrders}</div></div>
+      <div class="kpi"><div class="lb">Fatturato</div><div class="vl" style="color:var(--gn)">${euro(kpis.totalRevenue)}</div></div>
+      <div class="kpi"><div class="lb">In Elaborazione</div><div class="vl" style="color:var(--or)">${kpis.processing}</div></div>
+      <div class="kpi"><div class="lb">Completati</div><div class="vl" style="color:var(--gn)">${kpis.completed}</div></div>
+    </div>
+    <div style="margin-bottom:20px">
+      <button class="btn btn-p" onclick="syncWooOrders()">🔄 Sync Ordini</button>
+    </div>
+    <div class="tw"><div class="th"><h3>Ordini WooCommerce</h3></div>
+      <table><thead><tr><th>Ordine #</th><th>Cliente</th><th>Articoli</th><th>Totale</th><th>Stato</th><th>Data</th></tr></thead>
+      <tbody>${orders.length?orders.map(o=>`<tr>
+        <td><strong>#${o.order_number || o.id}</strong></td>
+        <td>${o.customer || '-'}</td>
+        <td>${o.items_count || 0}</td>
+        <td>${euro(o.total || 0)}</td>
+        <td><span class="woo-status ${getWooStatusClass(o.status)}">${getWooStatusLabel(o.status)}</span></td>
+        <td>${o.date ? new Date(o.date).toLocaleDateString('it-IT') : '-'}</td>
+      </tr>`).join(''):'<tr><td colspan="6" style="text-align:center;color:var(--dm);padding:30px">Nessun ordine</td></tr>'}</tbody></table>
+    </div>
+    <div class="tw"><div class="th"><h3>Prodotti</h3></div>
+      <table><thead><tr><th>Prodotto</th><th>SKU</th><th>Prezzo</th><th>Stock</th></tr></thead>
+      <tbody>${products.length?products.map(p=>`<tr>
+        <td><strong>${p.name || '-'}</strong></td>
+        <td>${p.sku || '-'}</td>
+        <td>${euro(p.price || 0)}</td>
+        <td>${p.stock || 0}</td>
+      </tr>`).join(''):'<tr><td colspan="4" style="text-align:center;color:var(--dm);padding:30px">Nessun prodotto</td></tr>'}</tbody></table>
     </div>`;
 }
 
@@ -631,7 +865,7 @@ async function saveSetting(key, value) {
 // ═══════════════════════════════════════
 // MODALS
 // ═══════════════════════════════════════
-function openModal(type, id=null, defStatus=null) {
+function openModal(type, id=null, defValue=null) {
   editId = id;
   const m = document.getElementById('modalBody');
   let h = '';
@@ -656,7 +890,7 @@ function openModal(type, id=null, defStatus=null) {
       <div class="fg"><label>Workload %</label><input type="number" id="f_workload" value="${t.workload||0}" min="0" max="100"></div></div>
       <div class="fa"><button class="btn btn-s" onclick="closeModal()">Annulla</button><button class="btn btn-p" onclick="saveModal('team')">Salva</button></div>`;
   } else if (type === 'project') {
-    const p = id ? DB.projects.find(x=>x.id===id) : {status:defStatus||'backlog'};
+    const p = id ? DB.projects.find(x=>x.id===id) : {status:defValue||'backlog'};
     const cOpts = DB.clients.map(c=>`<option value="${c.name}" ${p.client===c.name?'selected':''}>${c.name}</option>`).join('');
     const tOpts = DB.team.map(t=>`<option value="${t.name}" ${p.assignee===t.name?'selected':''}>${t.name}</option>`).join('');
     h = `<h3>${id?'✏️ Modifica':'➕ Nuovo'} Progetto</h3>
@@ -686,6 +920,18 @@ function openModal(type, id=null, defStatus=null) {
       <div class="fg"><label>Tipo</label><select id="f_type"><option value="entrata">Entrata</option><option value="uscita">Uscita</option></select></div></div>
       <div class="fg"><label>Importo (€)</label><input type="number" id="f_amount" value="0"></div>
       <div class="fa"><button class="btn btn-s" onclick="closeModal()">Annulla</button><button class="btn btn-p" onclick="saveModal('finance')">Salva</button></div>`;
+  } else if (type === 'calpost') {
+    const p = id ? DB.calendar_posts.find(x=>x.id===id) : {date:defValue||formatDate(new Date())};
+    const cOpts = (DB.clients||[]).map(c=>`<option value="${c.name}" ${p.client===c.name?'selected':''}>${c.name}</option>`).join('');
+    h = `<h3>${id?'✏️ Modifica':'➕ Nuovo'} Post</h3>
+      <div class="fg"><label>Titolo *</label><input id="f_title" value="${p.title||''}"></div>
+      <div class="fg"><label>Cliente</label><select id="f_client"><option value="">—</option>${cOpts}</select></div>
+      <div class="fr"><div class="fg"><label>Piattaforma</label><select id="f_platform"><option value="IG" ${p.platform==='IG'?'selected':''}>Instagram</option><option value="FB" ${p.platform==='FB'?'selected':''}>Facebook</option><option value="TK" ${p.platform==='TK'?'selected':''}>TikTok</option><option value="LI" ${p.platform==='LI'?'selected':''}>LinkedIn</option></select></div>
+      <div class="fg"><label>Orario</label><input type="time" id="f_time" value="${p.time||''}"></div></div>
+      <div class="fg"><label>Data</label><input type="date" id="f_date" value="${p.date||defValue||formatDate(new Date())}"></div>
+      <div class="fg"><label>Stato</label><select id="f_status"><option value="draft" ${p.status==='draft'?'selected':''}>Bozza</option><option value="scheduled" ${p.status==='scheduled'?'selected':''}>Programmato</option><option value="published" ${p.status==='published'?'selected':''}>Pubblicato</option></select></div>
+      <div class="fg"><label>Note</label><textarea id="f_notes">${p.notes||''}</textarea></div>
+      <div class="fa"><button class="btn btn-s" onclick="closeModal()">Annulla</button><button class="btn btn-p" onclick="saveModal('calendar_posts')">Salva</button></div>`;
   }
   m.innerHTML = h;
   document.getElementById('modal').classList.add('show');
@@ -711,6 +957,9 @@ async function saveModal(coll) {
     const type = gv('f_type');
     data = { date:gv('f_date'),description:gv('f_desc'),brand:gv('f_brand'),type,amount:parseInt(gv('f_amount'))||0 };
     if (!data.description) { toast('Descrizione obbligatoria','er'); return; }
+  } else if (coll === 'calendar_posts') {
+    data = { title:gv('f_title'),client:gv('f_client'),platform:gv('f_platform'),date:gv('f_date'),time:gv('f_time'),status:gv('f_status'),notes:gv('f_notes') };
+    if (!data.title) { toast('Titolo obbligatorio','er'); return; }
   }
 
   if (editId) await api('PUT', `/api/${coll}/${editId}`, data);

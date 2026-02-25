@@ -1,5 +1,6 @@
 const express = require('express');
 const http = require('http');
+const https = require('https');
 const { Server } = require('socket.io');
 const cors = require('cors');
 const fs = require('fs');
@@ -13,6 +14,11 @@ const PORT = process.env.PORT || 3000;
 const HOST = '0.0.0.0';
 const DB_PATH = path.join(__dirname, 'data.json');
 
+// ─── WooCommerce Config ───
+const WC_URL = 'https://crealabprint.it/wp-json/wc/v3';
+const WC_KEY = 'ck_2c395f7eb3eb54c542bb4351dd1ebbd942f5d144';
+const WC_SECRET = 'cs_78d8232bb73e03108f5128c1d38ab30a22c3e241';
+
 // ─── Middleware ───
 app.use(cors());
 app.use(express.json());
@@ -20,49 +26,9 @@ app.use(express.static(path.join(__dirname, 'public')));
 
 // ─── Database (JSON file) ───
 const DEFAULT_DATA = {
-  clients: [
-    {id:1,name:"Fashion Brand Italia",brand:"LAB",status:"active",value:12000,email:"info@fashionbrand.it",phone:"333 1234567",notes:"Cliente storico dal 2024",created:"2025-06-15"},
-    {id:2,name:"Tech Solutions Srl",brand:"LAB",status:"active",value:8500,email:"hello@techsol.it",phone:"333 9876543",notes:"Progetto web + branding",created:"2025-08-20"},
-    {id:3,name:"Merch Express",brand:"STUDIO",status:"active",value:15000,email:"ordini@merchexpress.it",phone:"335 5551234",notes:"Ordine merchandising grande",created:"2025-03-10"},
-    {id:4,name:"Bar Centrale",brand:"STUDIO",status:"pending",value:3200,email:"barcentrale@email.it",phone:"339 4445678",notes:"In attesa preventivo packaging",created:"2026-01-05"},
-    {id:5,name:"Ristorante Luna",brand:"LAB",status:"active",value:5800,email:"info@ristoranteluna.it",phone:"338 7771234",notes:"Social media management mensile",created:"2025-11-12"}
-  ],
-  team: [
-    {id:1,name:"Andrea Arnuzzo",role:"CEO / Founder",brand:"Entrambi",projects:5,workload:85,email:"andrea@crealab.it",status:"active"},
-    {id:2,name:"Marco Rossi",role:"Graphic Designer",brand:"LAB",projects:3,workload:70,email:"marco@crealab.it",status:"active"},
-    {id:3,name:"Sara Bianchi",role:"Social Media Manager",brand:"LAB",projects:4,workload:90,email:"sara@crealab.it",status:"active"},
-    {id:4,name:"Luca Verdi",role:"Production Manager",brand:"STUDIO",projects:2,workload:55,email:"luca@creastudio.it",status:"active"}
-  ],
-  projects: [
-    {id:1,name:"Rebranding Fashion Brand",client:"Fashion Brand Italia",brand:"LAB",status:"in_progress",progress:65,deadline:"2026-03-15",budget:8000,spent:4200,assignee:"Marco Rossi",description:"Rebranding completo: logo, identity, linee guida"},
-    {id:2,name:"E-commerce Tech Solutions",client:"Tech Solutions Srl",brand:"LAB",status:"in_progress",progress:40,deadline:"2026-04-30",budget:12000,spent:3500,assignee:"Andrea Arnuzzo",description:"Sviluppo e-commerce con catalogo prodotti"},
-    {id:3,name:"Catalogo Merch 2026",client:"Merch Express",brand:"STUDIO",status:"review",progress:85,deadline:"2026-03-01",budget:6000,spent:5100,assignee:"Luca Verdi",description:"Catalogo prodotti merchandising annuale"},
-    {id:4,name:"Social Media Pack Luna",client:"Ristorante Luna",brand:"LAB",status:"in_progress",progress:30,deadline:"2026-05-01",budget:3500,spent:800,assignee:"Sara Bianchi",description:"Pacchetto social 3 mesi"},
-    {id:5,name:"Packaging Bar Centrale",client:"Bar Centrale",brand:"STUDIO",status:"backlog",progress:0,deadline:"2026-06-01",budget:2500,spent:0,assignee:"Marco Rossi",description:"Design packaging prodotti bar"}
-  ],
-  automations: [
-    {id:1,name:"Email Benvenuto Cliente",description:"Invia email automatica a ogni nuovo cliente aggiunto",trigger:"Nuovo cliente",active:true,runs:23,lastRun:"2026-02-20T10:30:00"},
-    {id:2,name:"Report Settimanale",description:"Genera report PDF ogni lunedì con KPI della settimana",trigger:"Ogni Lunedì 9:00",active:true,runs:45,lastRun:"2026-02-24T09:00:00"},
-    {id:3,name:"Notifica Scadenza Progetto",description:"Avvisa 7 giorni prima della scadenza di un progetto",trigger:"7gg prima scadenza",active:true,runs:12,lastRun:"2026-02-22T08:00:00"},
-    {id:4,name:"Backup Dati Giornaliero",description:"Salva copia dei dati ogni sera alle 23:00",trigger:"Ogni giorno 23:00",active:false,runs:0,lastRun:null},
-    {id:5,name:"Fattura Automatica",description:"Genera fattura al completamento progetto",trigger:"Progetto completato",active:true,runs:8,lastRun:"2026-02-18T14:22:00"}
-  ],
-  finance: [
-    {id:1,date:"2026-02-20",description:"Pagamento Fashion Brand - Rebranding",brand:"LAB",type:"entrata",amount:4000},
-    {id:2,date:"2026-02-18",description:"Abbonamento Adobe CC",brand:"LAB",type:"uscita",amount:350},
-    {id:3,date:"2026-02-15",description:"Acconto Merch Express - Catalogo",brand:"STUDIO",type:"entrata",amount:3000},
-    {id:4,date:"2026-02-12",description:"Fornitore Stampa - Merch",brand:"STUDIO",type:"uscita",amount:1200},
-    {id:5,date:"2026-02-10",description:"Social Media Pack - Ristorante Luna",brand:"LAB",type:"entrata",amount:1500},
-    {id:6,date:"2026-02-05",description:"Hosting e Domini",brand:"LAB",type:"uscita",amount:180},
-    {id:7,date:"2026-01-28",description:"Pagamento Tech Solutions",brand:"LAB",type:"entrata",amount:3500}
-  ],
-  activity: [],
-  settings: {
-    companyName: "CREA",
-    brand1: "CREA LAB",
-    brand2: "CREA STUDIO",
-    email: "info@creaecosystem.it"
-  }
+  clients: [], team: [], projects: [], automations: [], finance: [],
+  activity: [], calendar: [], woo_orders: [],
+  settings: { companyName: "CREA", brand1: "CREA STUDIO", brand2: "CREA LAB", email: "hello@crea-studio.it" }
 };
 
 function loadDB() {
@@ -70,54 +36,149 @@ function loadDB() {
     if (fs.existsSync(DB_PATH)) {
       const raw = fs.readFileSync(DB_PATH, 'utf8');
       const data = JSON.parse(raw);
-      // Ensure all keys exist
       for (const key of Object.keys(DEFAULT_DATA)) {
         if (!data[key]) data[key] = JSON.parse(JSON.stringify(DEFAULT_DATA[key]));
       }
       return data;
     }
-  } catch (e) {
-    console.error('DB load error:', e.message);
-  }
+  } catch (e) { console.error('DB load error:', e.message); }
   return JSON.parse(JSON.stringify(DEFAULT_DATA));
 }
 
-function saveDB(data) {
-  fs.writeFileSync(DB_PATH, JSON.stringify(data, null, 2));
-}
+function saveDB(data) { fs.writeFileSync(DB_PATH, JSON.stringify(data, null, 2)); }
 
 let db = loadDB();
-saveDB(db); // Ensure file exists
+saveDB(db);
 
 function addActivity(action, detail) {
   db.activity.unshift({ action, detail, date: new Date().toISOString() });
   if (db.activity.length > 100) db.activity = db.activity.slice(0, 100);
   saveDB(db);
 }
-
-function broadcast(event, data) {
-  io.emit(event, data);
-}
-
+function broadcast(event, data) { io.emit(event, data); }
 function getNextId(collection) {
-  return db[collection].length ? Math.max(...db[collection].map(x => x.id)) + 1 : 1;
+  return db[collection] && db[collection].length ? Math.max(...db[collection].map(x => x.id)) + 1 : 1;
 }
 
-// ─── API ROUTES ───
+// ─── WooCommerce API ───
+function wcFetch(endpoint) {
+  return new Promise((resolve, reject) => {
+    const sep = endpoint.includes('?') ? '&' : '?';
+    const url = `${WC_URL}${endpoint}${sep}consumer_key=${WC_KEY}&consumer_secret=${WC_SECRET}`;
+    https.get(url, (res) => {
+      let data = '';
+      res.on('data', chunk => data += chunk);
+      res.on('end', () => {
+        try { resolve(JSON.parse(data)); }
+        catch(e) { reject(e); }
+      });
+    }).on('error', reject);
+  });
+}
 
-// Get all data (initial load)
-app.get('/api/data', (req, res) => {
-  res.json(db);
+// Get WooCommerce orders
+app.get('/api/woo/orders', async (req, res) => {
+  try {
+    const orders = await wcFetch('/orders?per_page=50&orderby=date&order=desc');
+    db.woo_orders = orders.map(o => ({
+      id: o.id,
+      number: o.number,
+      status: o.status,
+      total: o.total,
+      currency: o.currency,
+      customer: `${o.billing.first_name} ${o.billing.last_name}`,
+      email: o.billing.email,
+      phone: o.billing.phone,
+      city: o.billing.city,
+      date: o.date_created,
+      items: (o.line_items || []).map(i => ({ name: i.name, qty: i.quantity, total: i.total })),
+      payment_method: o.payment_method_title,
+      note: o.customer_note || ''
+    }));
+    saveDB(db);
+    broadcast('woo_update', db.woo_orders);
+    res.json(db.woo_orders);
+  } catch(e) {
+    res.status(500).json({ error: e.message });
+  }
 });
 
-// Get specific collection
+// Get WooCommerce stats
+app.get('/api/woo/stats', async (req, res) => {
+  try {
+    const orders = db.woo_orders.length ? db.woo_orders : await wcFetch('/orders?per_page=100');
+    const processed = Array.isArray(orders) ? orders : [];
+    const stats = {
+      total_orders: processed.length,
+      total_revenue: processed.reduce((s, o) => s + parseFloat(o.total || 0), 0),
+      processing: processed.filter(o => (o.status || '') === 'processing').length,
+      completed: processed.filter(o => (o.status || '') === 'completed').length,
+      pending: processed.filter(o => (o.status || '') === 'pending').length,
+      refunded: processed.filter(o => (o.status || '') === 'refunded').length,
+    };
+    res.json(stats);
+  } catch(e) {
+    res.status(500).json({ error: e.message });
+  }
+});
+
+// Get WooCommerce products
+app.get('/api/woo/products', async (req, res) => {
+  try {
+    const products = await wcFetch('/products?per_page=50');
+    res.json(products.map(p => ({
+      id: p.id, name: p.name, price: p.price, regular_price: p.regular_price,
+      stock: p.stock_quantity, status: p.status, type: p.type,
+      categories: (p.categories||[]).map(c => c.name),
+      image: p.images && p.images[0] ? p.images[0].src : null
+    })));
+  } catch(e) { res.status(500).json({ error: e.message }); }
+});
+
+// ─── Calendar API ───
+app.get('/api/calendar', (req, res) => {
+  if (!db.calendar) db.calendar = [];
+  res.json(db.calendar);
+});
+
+app.post('/api/calendar', (req, res) => {
+  if (!db.calendar) db.calendar = [];
+  const event = { ...req.body, id: db.calendar.length ? Math.max(...db.calendar.map(x=>x.id)) + 1 : 1 };
+  db.calendar.push(event);
+  addActivity('Calendario', `Nuovo post: "${event.title}" per ${event.client}`);
+  saveDB(db);
+  broadcast('calendar_update', db.calendar);
+  res.status(201).json(event);
+});
+
+app.put('/api/calendar/:id', (req, res) => {
+  if (!db.calendar) db.calendar = [];
+  const idx = db.calendar.findIndex(x => x.id === parseInt(req.params.id));
+  if (idx === -1) return res.status(404).json({ error: 'Not found' });
+  db.calendar[idx] = { ...db.calendar[idx], ...req.body, id: parseInt(req.params.id) };
+  saveDB(db);
+  broadcast('calendar_update', db.calendar);
+  res.json(db.calendar[idx]);
+});
+
+app.delete('/api/calendar/:id', (req, res) => {
+  if (!db.calendar) db.calendar = [];
+  db.calendar = db.calendar.filter(x => x.id !== parseInt(req.params.id));
+  saveDB(db);
+  broadcast('calendar_update', db.calendar);
+  res.json({ success: true });
+});
+
+// ─── Standard API ROUTES ───
+app.get('/api/data', (req, res) => res.json(db));
+
 app.get('/api/:collection', (req, res) => {
   const { collection } = req.params;
+  if (collection === 'woo' || collection === 'ai' || collection === 'calendar') return;
   if (!db[collection]) return res.status(404).json({ error: 'Collection not found' });
   res.json(db[collection]);
 });
 
-// Get single item
 app.get('/api/:collection/:id', (req, res) => {
   const { collection, id } = req.params;
   if (!db[collection]) return res.status(404).json({ error: 'Collection not found' });
@@ -126,9 +187,9 @@ app.get('/api/:collection/:id', (req, res) => {
   res.json(item);
 });
 
-// Create item
 app.post('/api/:collection', (req, res) => {
   const { collection } = req.params;
+  if (collection === 'calendar' || collection === 'woo') return;
   if (!db[collection]) return res.status(404).json({ error: 'Collection not found' });
   const item = { ...req.body, id: getNextId(collection) };
   db[collection].push(item);
@@ -139,9 +200,9 @@ app.post('/api/:collection', (req, res) => {
   res.status(201).json(item);
 });
 
-// Update item
 app.put('/api/:collection/:id', (req, res) => {
   const { collection, id } = req.params;
+  if (collection === 'calendar') return;
   if (!db[collection]) return res.status(404).json({ error: 'Collection not found' });
   const idx = db[collection].findIndex(x => x.id === parseInt(id));
   if (idx === -1) return res.status(404).json({ error: 'Item not found' });
@@ -153,7 +214,6 @@ app.put('/api/:collection/:id', (req, res) => {
   res.json(db[collection][idx]);
 });
 
-// Delete item
 app.delete('/api/:collection/:id', (req, res) => {
   const { collection, id } = req.params;
   if (!db[collection]) return res.status(404).json({ error: 'Collection not found' });
@@ -167,7 +227,6 @@ app.delete('/api/:collection/:id', (req, res) => {
   res.json({ success: true });
 });
 
-// Bulk update (for reordering, mass changes)
 app.put('/api/:collection', (req, res) => {
   const { collection } = req.params;
   if (!db[collection]) return res.status(404).json({ error: 'Collection not found' });
@@ -178,7 +237,6 @@ app.put('/api/:collection', (req, res) => {
   res.json(db[collection]);
 });
 
-// Update settings
 app.put('/api/settings', (req, res) => {
   db.settings = { ...db.settings, ...req.body };
   saveDB(db);
@@ -186,86 +244,87 @@ app.put('/api/settings', (req, res) => {
   res.json(db.settings);
 });
 
-// AI Insights endpoint
+// AI Insights
 app.get('/api/ai/insights', (req, res) => {
   const insights = [];
-
-  // Scadenze vicine
   db.projects.filter(p => p.status !== 'completed').forEach(p => {
     const daysLeft = Math.ceil((new Date(p.deadline) - new Date()) / 86400000);
     if (daysLeft < 14) {
-      insights.push({
-        type: 'deadline', priority: daysLeft < 7 ? 'high' : 'medium',
-        title: `⏰ "${p.name}" scade tra ${daysLeft} giorni`,
-        description: `Scadenza: ${p.deadline}. Avanzamento: ${p.progress}%. ${p.progress < 50 ? 'Significativamente in ritardo!' : 'Monitora la chiusura.'}`
+      insights.push({ type:'deadline', priority: daysLeft<7?'high':'medium',
+        title:`\u23F0 "${p.name}" scade tra ${daysLeft} giorni`,
+        description:`Scadenza: ${p.deadline}. Avanzamento: ${p.progress}%. ${p.progress<50?'In ritardo!':'Monitora la chiusura.'}`
       });
     }
   });
-
-  // Workload alto
   db.team.filter(t => t.workload > 80).forEach(t => {
-    insights.push({
-      type: 'workload', priority: 'high',
-      title: `🔥 ${t.name} ha workload al ${t.workload}%`,
-      description: `Redistribuire task per evitare burnout. Un carico >80% prolungato riduce la qualità.`
+    insights.push({ type:'workload', priority:'high',
+      title:`\uD83D\uDD25 ${t.name} ha workload al ${t.workload}%`,
+      description:`Redistribuire task per evitare burnout.`
     });
   });
-
-  // Clienti pending
   db.clients.filter(c => c.status === 'pending').forEach(c => {
-    insights.push({
-      type: 'client', priority: 'medium',
-      title: `📞 "${c.name}" in attesa`,
-      description: `Valore potenziale: €${c.value.toLocaleString()}. Fare follow-up per non perdere l'opportunità.`
+    insights.push({ type:'client', priority:'medium',
+      title:`\uD83D\uDCDE "${c.name}" in attesa`,
+      description:`Valore potenziale: \u20AC${c.value.toLocaleString()}. Fare follow-up.`
     });
   });
-
-  // Budget
-  const totalBudget = db.projects.reduce((s, p) => s + p.budget, 0);
-  const totalSpent = db.projects.reduce((s, p) => s + p.spent, 0);
-  if (totalBudget > 0 && totalSpent > totalBudget * 0.7) {
-    insights.push({
-      type: 'budget', priority: totalSpent > totalBudget * 0.9 ? 'high' : 'medium',
-      title: `💰 Budget al ${Math.round(totalSpent / totalBudget * 100)}%`,
-      description: `Speso €${totalSpent.toLocaleString()} su €${totalBudget.toLocaleString()}. Monitorare attentamente.`
+  // WooCommerce insights
+  const processingOrders = (db.woo_orders||[]).filter(o => o.status === 'processing');
+  if (processingOrders.length) {
+    insights.push({ type:'woo', priority:'medium',
+      title:`\uD83D\uDCE6 ${processingOrders.length} ordini WooCommerce da evadere`,
+      description:`Ordini in lavorazione su crealabprint.it. Controlla la sezione CREA LAB.`
     });
   }
-
-  // Automazioni inattive
-  const inactive = db.automations.filter(a => !a.active);
-  if (inactive.length) {
-    insights.push({
-      type: 'automation', priority: 'low',
-      title: `⚡ ${inactive.length} automazione/i disattivata/e`,
-      description: `Inattive: ${inactive.map(a => a.name).join(', ')}. Valuta se riattivarle.`
-    });
-  }
-
   if (!insights.length) {
-    insights.push({ type: 'ok', priority: 'low', title: '✅ Tutto nella norma!', description: 'Nessuna criticità evidenziata.' });
+    insights.push({ type:'ok', priority:'low', title:'\u2705 Tutto nella norma!', description:'Nessuna criticità.' });
   }
-
   res.json(insights);
 });
 
 // ─── WebSocket ───
 io.on('connection', (socket) => {
-  console.log(`🟢 Client connesso: ${socket.id}`);
-  // Send current data on connect
+  console.log(`\uD83D\uDFE2 Client connesso: ${socket.id}`);
   socket.emit('init', db);
-
   socket.on('disconnect', () => {
-    console.log(`🔴 Client disconnesso: ${socket.id}`);
+    console.log(`\uD83D\uDD34 Client disconnesso: ${socket.id}`);
   });
 });
 
+// ─── Anti-sleep ping (keeps Render free tier awake) ───
+const RENDER_URL = process.env.RENDER_EXTERNAL_URL || '';
+if (RENDER_URL) {
+  setInterval(() => {
+    https.get(RENDER_URL + '/api/data', () => {}).on('error', () => {});
+  }, 14 * 60 * 1000); // Every 14 minutes
+}
+
+// ─── Auto-refresh WooCommerce orders every 5 min ───
+async function refreshWooOrders() {
+  try {
+    const orders = await wcFetch('/orders?per_page=50&orderby=date&order=desc');
+    db.woo_orders = orders.map(o => ({
+      id: o.id, number: o.number, status: o.status, total: o.total,
+      currency: o.currency,
+      customer: `${o.billing.first_name} ${o.billing.last_name}`,
+      email: o.billing.email, phone: o.billing.phone, city: o.billing.city,
+      date: o.date_created,
+      items: (o.line_items||[]).map(i => ({ name: i.name, qty: i.quantity, total: i.total })),
+      payment_method: o.payment_method_title, note: o.customer_note || ''
+    }));
+    saveDB(db);
+    broadcast('woo_update', db.woo_orders);
+    console.log(`\uD83D\uDED2 WooCommerce: ${orders.length} ordini sincronizzati`);
+  } catch(e) { console.error('WooCommerce sync error:', e.message); }
+}
+setInterval(refreshWooOrders, 5 * 60 * 1000);
+setTimeout(refreshWooOrders, 5000); // First sync 5s after boot
+
 // ─── Start ───
 server.listen(PORT, HOST, () => {
-  console.log(`\n╔══════════════════════════════════════════╗`);
-  console.log(`║   🚀 CREA ECOSYSTEM DASHBOARD            ║`);
-  console.log(`║   Server attivo su http://localhost:${PORT}  ║`);
-  console.log(`║   Real-time: WebSocket attivo             ║`);
-  console.log(`║   Database: ${DB_PATH}       ║`);
-  console.log(`╚══════════════════════════════════════════╝\n`);
+  console.log(`\n\u2550 CREA ECOSYSTEM DASHBOARD`);
+  console.log(`  Server: http://localhost:${PORT}`);
+  console.log(`  WebSocket: attivo`);
+  console.log(`  WooCommerce: crealabprint.it (sync ogni 5min)`);
+  console.log(`  Anti-sleep: ${RENDER_URL ? 'attivo' : 'disattivato (no RENDER_URL)'}\n`);
 });
-// Deploy trigger: 1772011312
